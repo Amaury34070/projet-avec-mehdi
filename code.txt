@@ -601,6 +601,33 @@ const QR = {
 
 // ─── STATE ──────────────────────────────────────────
 let images = [], articleCount = 0, currentConvId = null, currentFilter = 'all', detailOrigin = 'home';
+let userListings = [];
+
+// ─── LOCALSTORAGE ────────────────────────────────────
+function allListings() { return [...userListings, ...LISTINGS]; }
+
+function saveUserData() {
+  try {
+    localStorage.setItem('lq_listings', JSON.stringify(userListings));
+    const convData = CONVERSATIONS.map(c => ({id:c.id, messages:c.messages, unread:c.unread}));
+    localStorage.setItem('lq_convs', JSON.stringify(convData));
+    localStorage.setItem('lq_count', articleCount);
+  } catch(e) { showToast('Erreur de sauvegarde'); }
+}
+
+function loadSavedData() {
+  try {
+    const ls = localStorage.getItem('lq_listings');
+    if (ls) userListings = JSON.parse(ls);
+    const lc = localStorage.getItem('lq_convs');
+    if (lc) JSON.parse(lc).forEach(saved => {
+      const c = CONVERSATIONS.find(x => x.id === saved.id);
+      if (c) { c.messages = saved.messages; c.unread = saved.unread; }
+    });
+    const lcount = localStorage.getItem('lq_count');
+    if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
+  } catch(e) {}
+}
 
 // ─── NAVIGATION ─────────────────────────────────────
 function go(id) {
@@ -621,7 +648,7 @@ function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
 function buildCards() {
   const grid = document.getElementById('cardsGrid');
   grid.innerHTML = '';
-  LISTINGS.forEach(item => {
+  allListings().forEach(item => {
     const tv = item.platforms.reduce((a,p)=>a+p.views,0);
     const tf = item.platforms.reduce((a,p)=>a+p.favs,0);
     const tm = item.platforms.reduce((a,p)=>a+p.msgs,0);
@@ -840,8 +867,31 @@ async function publish() {
   btn.textContent = 'Publication...';
   await new Promise(r=>setTimeout(r,2000));
   const names = Array.from(sel).map(c=>c.querySelector('.plat-name').textContent);
+
+  // Construire le vrai objet annonce depuis le formulaire
+  const newListing = {
+    id: Date.now(),
+    img: images[0]?.url || '',
+    brand: document.getElementById('rBrand').textContent,
+    name: document.getElementById('fTitle').value || document.getElementById('rName').textContent,
+    price: parseInt(document.getElementById('fPrice').value) || 0,
+    size: document.getElementById('fSize').value,
+    color: document.getElementById('fColor').value,
+    material: document.getElementById('fMat').value,
+    condition: document.getElementById('fCond').value,
+    style: document.getElementById('fStyle').value,
+    desc: document.getElementById('fDesc').value,
+    tags: Array.from(document.querySelectorAll('#fTags .tag')).map(t=>t.textContent.replace('#','')),
+    status: 'pub',
+    bg: '#1e1e22',
+    platforms: names.map(n=>({name:n,views:0,favs:0,msgs:0,vis:100}))
+  };
+
+  userListings.unshift(newListing);
   articleCount++;
   document.getElementById('homeToday').textContent = articleCount;
+  saveUserData();
+  buildCards();
   showToast('🚀 Publié sur '+names.join(', ')+' !');
   btn.disabled=false;
   btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publier maintenant';
@@ -871,7 +921,7 @@ function renderConvList() {
     const list = document.createElement('div');
     list.className = 'conv-list';
     convs.forEach(conv => {
-      const listing = LISTINGS.find(l=>l.id===conv.listingId);
+      const listing = allListings().find(l=>l.id===conv.listingId);
       const lastMsg = conv.messages[conv.messages.length-1];
       const colors = ['#2d1a3a','#1a2d1a','#1a1a3a','#3a1a1a','#1a2a3a','#2d2d1a'];
       let hash=0; for(let i=0;i<conv.initials.length;i++) hash+=conv.initials.charCodeAt(i);
@@ -905,7 +955,8 @@ function openConv(id) {
   const conv = CONVERSATIONS.find(c=>c.id===id);
   if (!conv) return;
   conv.unread = 0;
-  const listing = LISTINGS.find(l=>l.id===conv.listingId);
+  saveUserData();
+  const listing = allListings().find(l=>l.id===conv.listingId);
   const src = LOGO_MAP[conv.platform]||'';
   if (listing?.img) {
     document.getElementById('convThumbImg').src = listing.img;
@@ -981,6 +1032,7 @@ function sendMsg() {
   const time = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
   conv.messages.push({from:'me',text,time,read:false});
   input.value='';
+  saveUserData();
   renderBubbles(conv);
   const area = document.getElementById('bubblesArea');
   area.scrollTop = area.scrollHeight;
@@ -994,6 +1046,7 @@ function sendMsg() {
       const t=document.getElementById('typing'); if(t)t.remove();
       const replies=["Super merci ! 😊","Ok ça marche !","D'accord, je prends !","Parfait merci 🙏","Je valide !"];
       conv.messages.push({from:'them',text:replies[Math.floor(Math.random()*replies.length)],time:time,read:true});
+      saveUserData();
       renderBubbles(conv); area.scrollTop=area.scrollHeight;
     },1500);
   },1200);
@@ -1002,7 +1055,7 @@ function sendMsg() {
 function voirArticle() {
   const conv = CONVERSATIONS.find(c=>c.id===currentConvId);
   if (!conv) return;
-  const listing = LISTINGS.find(l=>l.id===conv.listingId);
+  const listing = allListings().find(l=>l.id===conv.listingId);
   if (!listing) return;
   detailOrigin='conversation';
   openDetail(listing);
@@ -1016,6 +1069,7 @@ function showToast(msg) {
 }
 
 // ─── INIT ────────────────────────────────────────────
+loadSavedData();
 buildCards();
 renderConvList();
 </script>
