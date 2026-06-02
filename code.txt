@@ -294,6 +294,18 @@ input[type=file]{display:none;}
 .toast{position:fixed;bottom:calc(var(--nav) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:11px 18px;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;white-space:nowrap;opacity:0;transition:all .3s cubic-bezier(.34,1.4,.64,1);z-index:200;backdrop-filter:blur(20px);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+/* API KEY MODAL */
+.apikey-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:300;align-items:center;justify-content:center;padding:24px;}
+.apikey-modal{background:var(--s1);border:1px solid var(--b2);border-radius:22px;padding:24px 20px;width:100%;}
+.apikey-icon{width:48px;height:48px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.apikey-title{font-size:17px;font-weight:700;letter-spacing:-.4px;text-align:center;margin-bottom:8px;}
+.apikey-desc{font-size:12.5px;color:var(--t2);text-align:center;line-height:1.55;margin-bottom:20px;}
+.apikey-input{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--t);font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;}
+.apikey-input:focus{border-color:rgba(96,165,250,.5);}
+.apikey-btn{width:100%;background:var(--blue);border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;}
+.apikey-btn:active{opacity:.85;}
+.apikey-skip{text-align:center;margin-top:12px;font-size:12px;color:var(--t3);cursor:pointer;}
+
 /* conversation screen layout */
 #conversation { display:flex; flex-direction:column; }
 #conversation .conv-header-bar { flex-shrink:0; }
@@ -534,11 +546,25 @@ input[type=file]{display:none;}
       <div class="setting-row"><div class="setting-icon"><img src="data:image/png;base64,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"></div><div class="setting-label">Depop</div><span style="font-size:11px;font-weight:600;color:var(--green)">Connecté</span></div>
       <div class="setting-row"><div class="setting-icon" style="background:#2d0000"><span style="font-size:12px;font-weight:700;color:#e53238">eB</span></div><div class="setting-label">eBay</div><span style="font-size:11px;font-weight:600;color:var(--amber)">Reconnecter</span></div>
     </div>
+    <div class="settings-section" style="margin-top:4px"><div class="settings-title">Intelligence Artificielle</div>
+      <div class="setting-row" onclick="showApiModal()"><div class="setting-icon" style="background:#0d1a2e;border:1px solid rgba(96,165,250,.2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><div class="setting-label">Clé API Anthropic</div><span id="apikeyStatus" style="font-size:11px;font-weight:600;color:var(--t2)">Configurer</span></div>
+    </div>
   </div>
   <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>Articles</span></div><div class="ni on" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style="color:white">Profil</span></div></div>
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<div class="apikey-overlay" id="apikeyOverlay">
+  <div class="apikey-modal">
+    <div class="apikey-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+    <div class="apikey-title">Clé API Anthropic</div>
+    <div class="apikey-desc">Pour activer l'analyse IA de tes photos, entre ta clé API Anthropic. Elle est stockée uniquement sur cet appareil, jamais envoyée ailleurs.</div>
+    <input class="apikey-input" id="apikeyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="apikey-btn" onclick="saveApiKey()">Activer l'IA</button>
+    <div class="apikey-skip" onclick="document.getElementById('apikeyOverlay').style.display='none'">Pas maintenant</div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -627,6 +653,41 @@ function loadSavedData() {
     const lcount = localStorage.getItem('lq_count');
     if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
   } catch(e) {}
+  updateApiKeyStatus();
+}
+
+// ─── API KEY ─────────────────────────────────────────
+function showApiModal() {
+  const existing = localStorage.getItem('lq_apikey');
+  if (existing) document.getElementById('apikeyInput').value = existing;
+  document.getElementById('apikeyOverlay').style.display = 'flex';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apikeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) { showToast('Clé invalide — commence par sk-ant-'); return; }
+  localStorage.setItem('lq_apikey', key);
+  document.getElementById('apikeyOverlay').style.display = 'none';
+  updateApiKeyStatus();
+  showToast('Clé API activée !');
+}
+
+function updateApiKeyStatus() {
+  const key = localStorage.getItem('lq_apikey');
+  const el = document.getElementById('apikeyStatus');
+  if (!el) return;
+  el.textContent = key ? '● Activé' : 'Configurer';
+  el.style.color = key ? 'var(--green)' : 'var(--t2)';
+}
+
+function getApiHeaders() {
+  const key = localStorage.getItem('lq_apikey') || '';
+  return {
+    'Content-Type': 'application/json',
+    'x-api-key': key,
+    'anthropic-version': '2023-06-01',
+    'anthropic-dangerous-direct-browser-access': 'true'
+  };
 }
 
 // ─── NAVIGATION ─────────────────────────────────────
@@ -781,6 +842,7 @@ function resetPost() {
 // ─── AI ANALYSIS ────────────────────────────────────
 async function startAI() {
   if (!images.length) { showToast('Importe au moins une photo'); return; }
+  if (!localStorage.getItem('lq_apikey')) { showApiModal(); return; }
   document.getElementById('aiBtn').disabled = true;
   document.getElementById('aiTxt').textContent = 'Analyse en cours...';
   document.getElementById('aiShimmer').style.display = 'block';
@@ -815,13 +877,19 @@ async function callAPI() {
 Prix en euros marché français Vinted/Leboncoin.`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:[...contents,{type:"text",text:prompt}]}]})
+      method:"POST", headers: getApiHeaders(),
+      body:JSON.stringify({model:"claude-opus-4-5",max_tokens:1000,messages:[{role:"user",content:[...contents,{type:"text",text:prompt}]}]})
     });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      if (res.status === 401) { showToast('Clé API invalide — vérifie dans Profil'); showApiModal(); return; }
+      throw new Error(err.error?.message || 'Erreur API '+res.status);
+    }
     const data = await res.json();
     const raw = data.content[0].text.trim().replace(/```json|```/g,'').trim();
     showResult(JSON.parse(raw));
   } catch(e) {
+    showToast('Analyse échouée — données demo affichées');
     showResult({brand:"Nike",category:"Chaussures",size:"42",color:"Triple White",material:"Cuir / mesh",condition:"Excellent état",style:"Streetwear",tags:["nike","airmax","sneakers","blanc","sport"],title:"Nike Air Max 90 Triple White — T.42",description:"Paire de Nike Air Max 90 Triple White taille 42. Portées 3 fois, semelle impeccable, boîte originale fournie.",price_min:55,price_recommended:75,price_max:110,similar_count:248});
   }
 }
@@ -991,7 +1059,7 @@ function isNonFrench(text) {
 async function translateMsg(msgId, text, btnEl) {
   btnEl.textContent='Traduction...'; btnEl.disabled=true;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,messages:[{role:"user",content:`Traduis ce message en français naturel. Retourne UNIQUEMENT la traduction: "${text}"`}]})});
+    const res = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:getApiHeaders(),body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:200,messages:[{role:"user",content:`Traduis ce message en français naturel. Retourne UNIQUEMENT la traduction: "${text}"`}]})});
     const data = await res.json();
     const translated = data.content[0].text.trim();
     const container = btnEl.parentElement; btnEl.remove();
