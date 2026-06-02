@@ -306,6 +306,26 @@ input[type=file]{display:none;}
 .apikey-btn:active{opacity:.85;}
 .apikey-skip{text-align:center;margin-top:12px;font-size:12px;color:var(--t3);cursor:pointer;}
 
+/* PUBLICATION SHEET */
+.pub-sheet-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:300;align-items:flex-end;}
+.pub-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:18px 16px 36px;border-top:1px solid var(--b2);}
+.pub-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
+.pub-sheet-copied{display:flex;align-items:center;gap:8px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:10px 12px;margin-bottom:14px;}
+.pub-sheet-copied-icon{width:28px;height:28px;background:rgba(74,222,128,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pub-sheet-copied-text{font-size:13px;font-weight:600;color:var(--green);}
+.pub-sheet-copied-sub{font-size:11px;color:rgba(74,222,128,.7);}
+.pub-text-box{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:10px 12px;font-size:11.5px;color:var(--t2);line-height:1.6;max-height:90px;overflow-y:auto;margin-bottom:16px;white-space:pre-wrap;font-family:'Inter',sans-serif;}
+.pub-sheet-label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.pub-plat-btn{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:12px;margin-bottom:8px;cursor:pointer;text-decoration:none;transition:opacity .12s;}
+.pub-plat-btn:active{opacity:.75;}
+.pub-plat-left{display:flex;align-items:center;gap:10px;}
+.pub-plat-logo{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;}
+.pub-plat-logo img{width:100%;height:100%;object-fit:cover;}
+.pub-plat-name{font-size:14px;font-weight:600;color:var(--t);}
+.pub-plat-hint{font-size:11px;color:var(--t2);margin-top:1px;}
+.pub-plat-arrow{color:var(--t3);}
+.pub-done-btn{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;}
+
 /* conversation screen layout */
 #conversation { display:flex; flex-direction:column; }
 #conversation .conv-header-bar { flex-shrink:0; }
@@ -555,6 +575,20 @@ input[type=file]{display:none;}
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
+<div class="pub-sheet-overlay" id="pubSheetOverlay">
+  <div class="pub-sheet">
+    <div class="pub-sheet-handle"></div>
+    <div class="pub-sheet-copied">
+      <div class="pub-sheet-copied-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="pub-sheet-copied-text">Texte copié !</div><div class="pub-sheet-copied-sub">Colle-le dans chaque annonce</div></div>
+    </div>
+    <div class="pub-text-box" id="pubTextPreview"></div>
+    <div class="pub-sheet-label">Ouvrir et coller sur</div>
+    <div id="pubPlatBtns"></div>
+    <button class="pub-done-btn" onclick="closePubSheet()">Terminé</button>
+  </div>
+</div>
+
 <div class="apikey-overlay" id="apikeyOverlay">
   <div class="apikey-modal">
     <div class="apikey-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
@@ -654,6 +688,49 @@ function loadSavedData() {
     if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
   } catch(e) {}
   updateApiKeyStatus();
+}
+
+// ─── PUBLICATION PLATEFORME ──────────────────────────
+const PLATFORM_URLS = {
+  'Vinted':    'https://www.vinted.fr/items/new',
+  'Leboncoin': 'https://www.leboncoin.fr/deposer-annonce',
+  'Depop':     'https://www.depop.com/sell/'
+};
+
+function buildListingText(listing) {
+  const tags = (listing.tags||[]).map(t=>'#'+t).join(' ');
+  return `${listing.name}\n\n${listing.desc}\n\nPrix : ${listing.price} €  |  Taille : ${listing.size}  |  État : ${listing.condition}\nCouleur : ${listing.color}  |  Matière : ${listing.material}\n\n${tags}`;
+}
+
+function openPubSheet(listing, names) {
+  const text = buildListingText(listing);
+  document.getElementById('pubTextPreview').textContent = text;
+  navigator.clipboard.writeText(text).catch(()=>{});
+  const btns = document.getElementById('pubPlatBtns');
+  btns.innerHTML = '';
+  names.forEach(name => {
+    const url = PLATFORM_URLS[name] || '#';
+    const logo = LOGO_MAP[name] || '';
+    const a = document.createElement('a');
+    a.className = 'pub-plat-btn';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `
+      <div class="pub-plat-left">
+        <div class="pub-plat-logo">${logo ? `<img src="${logo}">` : `<div style="background:var(--s3);width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">${name.slice(0,2)}</div>`}</div>
+        <div><div class="pub-plat-name">${name}</div><div class="pub-plat-hint">Ouvrir et coller le texte</div></div>
+      </div>
+      <svg class="pub-plat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+    btns.appendChild(a);
+  });
+  document.getElementById('pubSheetOverlay').style.display = 'flex';
+}
+
+function closePubSheet() {
+  document.getElementById('pubSheetOverlay').style.display = 'none';
+  resetPost();
+  go('home');
 }
 
 // ─── API KEY ─────────────────────────────────────────
@@ -932,11 +1009,9 @@ async function publish() {
   if (!sel.length) { showToast('Sélectionne au moins une plateforme'); return; }
   const btn = document.querySelector('.pub-btn');
   btn.disabled = true;
-  btn.textContent = 'Publication...';
-  await new Promise(r=>setTimeout(r,2000));
+  btn.textContent = 'Préparation...';
   const names = Array.from(sel).map(c=>c.querySelector('.plat-name').textContent);
 
-  // Construire le vrai objet annonce depuis le formulaire
   const newListing = {
     id: Date.now(),
     img: images[0]?.url || '',
@@ -960,10 +1035,9 @@ async function publish() {
   document.getElementById('homeToday').textContent = articleCount;
   saveUserData();
   buildCards();
-  showToast('🚀 Publié sur '+names.join(', ')+' !');
-  btn.disabled=false;
+  btn.disabled = false;
   btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publier maintenant';
-  setTimeout(()=>{resetPost();go('home');},1600);
+  openPubSheet(newListing, names);
 }
 
 // ─── MESSAGES ────────────────────────────────────────
