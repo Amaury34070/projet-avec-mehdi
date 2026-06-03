@@ -337,6 +337,13 @@ input[type=file]{display:none;}
 .pub-plat-hint{font-size:11px;color:var(--t2);margin-top:1px;}
 .pub-plat-arrow{color:var(--t3);}
 .pub-done-btn{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;}
+.del-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
+.del-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);}
+.del-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
+.del-sheet-name{font-size:14px;font-weight:600;text-align:center;margin-bottom:6px;}
+.del-sheet-sub{font-size:12px;color:var(--t2);text-align:center;margin-bottom:20px;}
+.del-btn-danger{width:100%;background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.3);border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:var(--red);cursor:pointer;margin-bottom:8px;font-family:'Inter',sans-serif;}
+.del-btn-cancel{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;font-family:'Inter',sans-serif;}
 
 /* conversation screen layout */
 #conversation { display:flex; flex-direction:column; }
@@ -588,6 +595,16 @@ input[type=file]{display:none;}
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
+<div class="del-overlay" id="delOverlay">
+  <div class="del-sheet">
+    <div class="del-sheet-handle"></div>
+    <div class="del-sheet-name" id="delItemName"></div>
+    <div class="del-sheet-sub">Supprimer cette annonce de Listiq ?</div>
+    <button class="del-btn-danger" onclick="confirmDelete()">Supprimer</button>
+    <button class="del-btn-cancel" onclick="document.getElementById('delOverlay').style.display='none'">Annuler</button>
+  </div>
+</div>
+
 <div class="pub-sheet-overlay" id="pubSheetOverlay">
   <div class="pub-sheet">
     <div class="pub-sheet-handle"></div>
@@ -701,6 +718,23 @@ function loadSavedData() {
     if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
   } catch(e) {}
   updateApiKeyStatus();
+}
+
+// ─── SUPPRESSION ANNONCE ─────────────────────────────
+let delTargetId = null;
+
+function showDelSheet(item) {
+  delTargetId = item.id;
+  document.getElementById('delItemName').textContent = item.name;
+  document.getElementById('delOverlay').style.display = 'flex';
+}
+
+function confirmDelete() {
+  userListings = userListings.filter(l => l.id !== delTargetId);
+  saveUserData();
+  buildCards();
+  document.getElementById('delOverlay').style.display = 'none';
+  showToast('Annonce supprimée');
 }
 
 // ─── PUBLICATION PLATEFORME ──────────────────────────
@@ -825,6 +859,10 @@ function buildCards() {
           <div class="lcard-stat"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>${tm}</span></div>
         </div>
       </div>`;
+    let pressTimer;
+    card.addEventListener('touchstart', () => { pressTimer = setTimeout(() => showDelSheet(item), 600); }, {passive:true});
+    card.addEventListener('touchend', () => clearTimeout(pressTimer));
+    card.addEventListener('touchmove', () => clearTimeout(pressTimer));
     card.addEventListener('click', () => { detailOrigin='home'; openDetail(item); });
     grid.appendChild(card);
     const nameEl = card.querySelector('.lcard-name');
