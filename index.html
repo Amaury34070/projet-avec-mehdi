@@ -478,7 +478,8 @@ input[type=file]{display:none;}
         <div class="frow"><div class="fkey">Description</div><textarea class="fval" id="fDesc" rows="4" placeholder="—"></textarea></div>
       </div>
       <div class="fcard"><div class="fcard-title">Prix estimé</div>
-        <div class="price-3"><div><div class="plbl">Min</div><div class="pval" id="pMin">—</div></div><div><div class="plbl">Recommandé</div><div class="pval rec" id="pRec">—</div></div><div><div class="plbl">Max</div><div class="pval" id="pMax">—</div></div></div>
+        <div id="priceNewRow" style="display:none;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:8px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--t2)">Prix neuf boutique</span><span id="pNew" style="font-size:14px;font-weight:700;color:#60a5fa">—</span></div>
+        <div class="price-3"><div><div class="plbl">Min occasion</div><div class="pval" id="pMin">—</div></div><div><div class="plbl">Recommandé</div><div class="pval rec" id="pRec">—</div></div><div><div class="plbl">Max occasion</div><div class="pval" id="pMax">—</div></div></div>
         <div class="price-note" id="priceNote"></div>
         <div class="price-input-row"><span class="pilbl">Mon prix</span><div class="piwrap"><input type="number" class="piinput" id="fPrice" placeholder="0"></div><span style="font-size:15px;font-weight:600;color:var(--t2)">€</span></div>
       </div>
@@ -959,7 +960,7 @@ async function animSteps() {
   setDone('ls3','li3'); setOn('ls4','li4');
 }
 
-const DEMO_RESULT = {brand:"Nike",category:"Chaussures",size:"42",color:"Triple White",material:"Cuir / mesh",condition:"Excellent état",style:"Streetwear",tags:["nike","airmax","sneakers","blanc","sport"],title:"Nike Air Max 90 Triple White — T.42",description:"Paire de Nike Air Max 90 Triple White taille 42. Portées 3 fois, semelle impeccable, boîte originale fournie.",price_min:55,price_recommended:75,price_max:110,similar_count:248};
+const DEMO_RESULT = {brand:"⚠️ DÉMO",category:"Lunettes",model:"",size:"",color:"Noir",material:"Acétate",condition:"Très bon état",style:"Luxe",tags:["lunettes","soleil","demo","mode","luxe"],title:"[DÉMO] Active ta clé API pour une vraie analyse",description:"Ceci est un résultat de démonstration. Configure ta clé API Anthropic dans Profil pour que l'IA analyse vraiment tes photos et reconnaisse la marque, le modèle et estime le prix réel.",price_new:0,price_min:0,price_recommended:0,price_max:0,similar_count:0};
 
 async function callAPI() {
   if (!localStorage.getItem('lq_apikey')) {
@@ -967,9 +968,24 @@ async function callAPI() {
     return;
   }
   const contents = images.map(img => ({type:"image",source:{type:"base64",media_type:img.file.type||"image/jpeg",data:img.url.split(',')[1]}}));
-  const prompt = `Expert revente mode. Analyse ces images. Retourne UNIQUEMENT un JSON valide sans markdown:
-{"brand":"marque","category":"Vêtement/Chaussures/Accessoire/Sac","size":"taille","color":"couleur","material":"matière","condition":"Neuf avec étiquettes/Excellent état/Très bon état/Bon état/État correct","style":"style","tags":["t1","t2","t3","t4","t5"],"title":"titre max 55 car","description":"3-4 phrases percutantes","price_min":0,"price_recommended":0,"price_max":0,"similar_count":0}
-Prix en euros marché français Vinted/Leboncoin.`;
+  const prompt = `Tu es un expert en revente de mode et luxe (Vinted, Leboncoin, Vestiaire Collective, StockX). Analyse ces photos avec précision.
+
+IDENTIFICATION :
+- Lis tous les logos, inscriptions, étiquettes visibles sur l'article
+- Identifie la marque EXACTE (ex: Prada, Louis Vuitton, Nike, Zara...)
+- Trouve le modèle PRÉCIS si visible (ex: "Symbole", "Neverfull MM", "Air Max 90"...)
+- Déduis la taille depuis étiquettes ou proportions
+- Note l'état réel visible (usure, rayures, défauts)
+
+ESTIMATION PRIX :
+- Prix neuf boutique (si marque de luxe/premium)
+- Prix occasion actuel sur Vinted/Leboncoin/Vestiaire pour article similaire en même état
+- Fourchette réaliste min/max selon état
+
+Retourne UNIQUEMENT ce JSON valide, sans markdown, sans texte autour :
+{"brand":"marque exacte","category":"Vêtement/Chaussures/Accessoire/Sac/Lunettes/Bijou/Montre","model":"modèle précis ou vide","size":"taille ou vide","color":"couleur(s)","material":"matière principale","condition":"Neuf avec étiquettes/Excellent état/Très bon état/Bon état/État correct","style":"Luxe/Streetwear/Casual/Sport/Vintage/Classique","tags":["tag1","tag2","tag3","tag4","tag5"],"title":"titre accrocheur max 55 car avec marque+modèle+taille","description":"2-3 phrases percutantes pour l'annonce, mentionne les points forts et l'état","price_new":0,"price_min":0,"price_recommended":0,"price_max":0,"similar_count":0}
+
+Note: price_new = prix neuf indicatif, 0 si inconnue. similar_count = estimation annonces similaires sur le marché.`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method:"POST", headers: getApiHeaders(),
@@ -1006,7 +1022,12 @@ function showResult(d) {
   document.getElementById('pMin').textContent = (d.price_min||0)+' €';
   document.getElementById('pRec').textContent = (d.price_recommended||0)+' €';
   document.getElementById('pMax').textContent = (d.price_max||0)+' €';
-  document.getElementById('priceNote').textContent = 'Basé sur '+(d.similar_count||0)+' articles similaires';
+  document.getElementById('priceNote').textContent = 'Basé sur '+(d.similar_count||0)+' articles similaires sur Vinted/Leboncoin';
+  const pNewRow = document.getElementById('priceNewRow');
+  if (d.price_new && d.price_new > 0) {
+    document.getElementById('pNew').textContent = d.price_new+' €';
+    pNewRow.style.display = 'flex';
+  } else { pNewRow.style.display = 'none'; }
   const tags = document.getElementById('fTags'); tags.innerHTML='';
   (d.tags||[]).forEach(t => { const s=document.createElement('span');s.className='tag';s.textContent='#'+t;tags.appendChild(s); });
   document.getElementById('loadBox').style.display='none';
