@@ -337,6 +337,8 @@ input[type=file]{display:none;}
 .pub-plat-hint{font-size:11px;color:var(--t2);margin-top:1px;}
 .pub-plat-arrow{color:var(--t3);}
 .pub-done-btn{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;}
+.home-tab{font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer;color:var(--t2);background:transparent;transition:all .15s;}
+.home-tab.on{background:var(--s2);color:var(--t);border:1px solid var(--b2);}
 .del-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
 .del-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);}
 .del-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
@@ -380,7 +382,12 @@ input[type=file]{display:none;}
       <div class="stat-box"><div class="stat-val">847</div><div class="stat-lbl">Ce mois</div></div>
       <div class="stat-box hi"><div class="stat-val">12,3k€</div><div class="stat-lbl">CA estimé</div></div>
     </div>
-    <div class="sec-hdr"><div class="sec-title">Annonces en ligne</div><div class="sec-link">Voir tout</div></div>
+    <div class="sec-hdr">
+      <div style="display:flex;gap:6px">
+        <div class="home-tab on" id="tabActives" onclick="switchHomeTab('actives',this)">Actives</div>
+        <div class="home-tab" id="tabArchives" onclick="switchHomeTab('archives',this)">Archivées</div>
+      </div>
+    </div>
     <div class="cards-grid" id="cardsGrid"></div>
     <div style="height:8px"></div>
   </div>
@@ -394,7 +401,7 @@ input[type=file]{display:none;}
     <div class="detail-topbar">
       <div class="detail-back" onclick="detailGoBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
       <div style="font-size:15px;font-weight:700">Détail annonce</div>
-      <div class="detail-more"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+      <div class="detail-more" onclick="showDetailMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
     </div>
     <div class="detail-hero-info">
       <div class="detail-brand" id="dBrand"></div>
@@ -599,9 +606,15 @@ input[type=file]{display:none;}
   <div class="del-sheet">
     <div class="del-sheet-handle"></div>
     <div class="del-sheet-name" id="delItemName"></div>
-    <div class="del-sheet-sub">Supprimer cette annonce de Listiq ?</div>
-    <button class="del-btn-danger" onclick="confirmDelete()">Supprimer</button>
-    <button class="del-btn-cancel" onclick="document.getElementById('delOverlay').style.display='none'">Annuler</button>
+    <button class="del-btn-cancel" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:var(--amber);margin-bottom:8px" onclick="confirmArchive()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+      Archiver
+    </button>
+    <button class="del-btn-danger" onclick="confirmDelete()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      Supprimer
+    </button>
+    <button class="del-btn-cancel" onclick="document.getElementById('delOverlay').style.display='none'" style="margin-top:8px">Annuler</button>
   </div>
 </div>
 
@@ -720,13 +733,30 @@ function loadSavedData() {
   updateApiKeyStatus();
 }
 
-// ─── SUPPRESSION ANNONCE ─────────────────────────────
+// ─── GESTION ANNONCES ────────────────────────────────
 let delTargetId = null;
+let homeTab = 'actives';
 
-function showDelSheet(item) {
-  delTargetId = item.id;
-  document.getElementById('delItemName').textContent = item.name;
+function switchHomeTab(tab, el) {
+  homeTab = tab;
+  document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  buildCards();
+}
+
+function showDetailMenu() {
+  const listing = allListings().find(l => l.id === delTargetId) || currentDetailItem;
+  if (!listing) return;
+  delTargetId = listing.id;
+  document.getElementById('delItemName').textContent = listing.name;
   document.getElementById('delOverlay').style.display = 'flex';
+}
+
+function confirmArchive() {
+  const l = userListings.find(l => l.id === delTargetId);
+  if (l) { l.status = 'archived'; saveUserData(); buildCards(); detailGoBack(); }
+  document.getElementById('delOverlay').style.display = 'none';
+  showToast('Annonce archivée');
 }
 
 function confirmDelete() {
@@ -734,6 +764,7 @@ function confirmDelete() {
   saveUserData();
   buildCards();
   document.getElementById('delOverlay').style.display = 'none';
+  detailGoBack();
   showToast('Annonce supprimée');
 }
 
@@ -833,7 +864,12 @@ function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
 function buildCards() {
   const grid = document.getElementById('cardsGrid');
   grid.innerHTML = '';
-  allListings().forEach(item => {
+  const filtered = allListings().filter(item => homeTab === 'archives' ? item.status === 'archived' : item.status !== 'archived');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 16px;color:var(--t2);font-size:13px">${homeTab==='archives'?'Aucune annonce archivée':'Aucune annonce active'}</div>`;
+    return;
+  }
+  filtered.forEach(item => {
     const tv = item.platforms.reduce((a,p)=>a+p.views,0);
     const tf = item.platforms.reduce((a,p)=>a+p.favs,0);
     const tm = item.platforms.reduce((a,p)=>a+p.msgs,0);
@@ -859,10 +895,6 @@ function buildCards() {
           <div class="lcard-stat"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>${tm}</span></div>
         </div>
       </div>`;
-    let pressTimer;
-    card.addEventListener('touchstart', () => { pressTimer = setTimeout(() => showDelSheet(item), 600); }, {passive:true});
-    card.addEventListener('touchend', () => clearTimeout(pressTimer));
-    card.addEventListener('touchmove', () => clearTimeout(pressTimer));
     card.addEventListener('click', () => { detailOrigin='home'; openDetail(item); });
     grid.appendChild(card);
     const nameEl = card.querySelector('.lcard-name');
@@ -871,7 +903,10 @@ function buildCards() {
 }
 
 // ─── DETAIL ─────────────────────────────────────────
+let currentDetailItem = null;
 function openDetail(item) {
+  currentDetailItem = item;
+  delTargetId = item.id;
   const hero = document.getElementById('detailHero');
   hero.style.backgroundImage = item.img ? `url(${item.img})` : '';
   hero.style.backgroundSize = 'cover';
