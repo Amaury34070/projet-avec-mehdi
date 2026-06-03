@@ -339,6 +339,7 @@ input[type=file]{display:none;}
 .pub-done-btn{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;}
 .home-tab{font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer;color:var(--t2);background:transparent;transition:all .15s;}
 .home-tab.on{background:var(--s2);color:var(--t);border:1px solid var(--b2);}
+.home-tab span{margin-left:1px;font-size:11px;font-weight:700;opacity:.7;}
 .del-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
 .del-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);}
 .del-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
@@ -384,8 +385,8 @@ input[type=file]{display:none;}
     </div>
     <div class="sec-hdr">
       <div style="display:flex;gap:6px">
-        <div class="home-tab on" id="tabActives" onclick="switchHomeTab('actives',this)">Actives</div>
-        <div class="home-tab" id="tabArchives" onclick="switchHomeTab('archives',this)">Archivées</div>
+        <div class="home-tab on" id="tabActives" onclick="switchHomeTab('actives',this)">Actives<span id="countActives"></span></div>
+        <div class="home-tab" id="tabArchives" onclick="switchHomeTab('archives',this)">Archivées<span id="countArchives"></span></div>
       </div>
     </div>
     <div class="cards-grid" id="cardsGrid"></div>
@@ -894,7 +895,16 @@ function detailGoBack() { go(detailOrigin); }
 // ─── HOME CARDS ─────────────────────────────────────
 function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
 
+function updateTabCounts() {
+  const all = allListings();
+  const nActives = all.filter(l => l.status !== 'archived').length;
+  const nArchives = all.filter(l => l.status === 'archived').length;
+  document.getElementById('countActives').textContent = nActives > 0 ? nActives : '';
+  document.getElementById('countArchives').textContent = nArchives > 0 ? nArchives : '';
+}
+
 function buildCards() {
+  updateTabCounts();
   const grid = document.getElementById('cardsGrid');
   grid.innerHTML = '';
   const filtered = allListings().filter(item => homeTab === 'archives' ? item.status === 'archived' : item.status !== 'archived');
