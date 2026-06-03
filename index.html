@@ -606,10 +606,7 @@ input[type=file]{display:none;}
   <div class="del-sheet">
     <div class="del-sheet-handle"></div>
     <div class="del-sheet-name" id="delItemName"></div>
-    <button class="del-btn-cancel" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:var(--amber);margin-bottom:8px" onclick="confirmArchive()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-      Archiver
-    </button>
+    <button class="del-btn-cancel" id="archiveToggleBtn" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:var(--amber);margin-bottom:8px" onclick="confirmArchive()"></button>
     <button class="del-btn-danger" onclick="confirmDelete()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
       Supprimer
@@ -749,6 +746,21 @@ function showDetailMenu() {
   if (!listing) return;
   delTargetId = listing.id;
   document.getElementById('delItemName').textContent = listing.name;
+  const isArchived = listing.status === 'archived';
+  const btn = document.getElementById('archiveToggleBtn');
+  if (isArchived) {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>Remettre en ligne';
+    btn.style.background = 'rgba(74,222,128,.08)';
+    btn.style.borderColor = 'rgba(74,222,128,.25)';
+    btn.style.color = 'var(--green)';
+    btn.onclick = confirmUnarchive;
+  } else {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archiver';
+    btn.style.background = 'rgba(251,191,36,.08)';
+    btn.style.borderColor = 'rgba(251,191,36,.25)';
+    btn.style.color = 'var(--amber)';
+    btn.onclick = confirmArchive;
+  }
   document.getElementById('delOverlay').style.display = 'flex';
 }
 
@@ -757,6 +769,13 @@ function confirmArchive() {
   if (l) { l.status = 'archived'; saveUserData(); buildCards(); detailGoBack(); }
   document.getElementById('delOverlay').style.display = 'none';
   showToast('Annonce archivée');
+}
+
+function confirmUnarchive() {
+  const l = userListings.find(l => l.id === delTargetId);
+  if (l) { l.status = 'pub'; saveUserData(); buildCards(); detailGoBack(); }
+  document.getElementById('delOverlay').style.display = 'none';
+  showToast('Annonce remise en ligne ✓');
 }
 
 function confirmDelete() {
