@@ -769,6 +769,20 @@ function loadSavedData() {
     if (lo) listingOverrides = JSON.parse(lo);
     const lsales = localStorage.getItem('lq_sales');
     if (lsales) sales = JSON.parse(lsales);
+    else {
+      const now = new Date();
+      const d = (offset) => { const t = new Date(now); t.setDate(t.getDate()-offset); return t.toISOString(); };
+      sales = [
+        {id:1, listingId:0, name:'Veste en cuir oversize', brand:'Zara', price:45, date: d(0).replace(/T\d{2}/, 'T09')},
+        {id:2, listingId:0, name:'Sneakers Air Max 90', brand:'Nike', price:78, date: d(0).replace(/T\d{2}/, 'T14')},
+        {id:3, listingId:0, name:'Sac bandoulière', brand:'Mango', price:32, date: d(2)},
+        {id:4, listingId:0, name:'Jean slim taille haute', brand:'Levi\'s', price:29, date: d(5)},
+        {id:5, listingId:0, name:'Lunettes de soleil', brand:'Prada', price:120, date: d(8)},
+        {id:6, listingId:0, name:'Robe midi fleurie', brand:'Sézane', price:55, date: d(12)},
+        {id:7, listingId:0, name:'Pull en laine mérinos', brand:'COS', price:38, date: d(18)},
+        {id:8, listingId:0, name:'Blazer croisé', brand:'H&M', price:22, date: d(22)},
+      ];
+    }
   } catch(e) {}
   updateApiKeyStatus();
   updateStats();
