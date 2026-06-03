@@ -959,7 +959,13 @@ async function animSteps() {
   setDone('ls3','li3'); setOn('ls4','li4');
 }
 
+const DEMO_RESULT = {brand:"Nike",category:"Chaussures",size:"42",color:"Triple White",material:"Cuir / mesh",condition:"Excellent état",style:"Streetwear",tags:["nike","airmax","sneakers","blanc","sport"],title:"Nike Air Max 90 Triple White — T.42",description:"Paire de Nike Air Max 90 Triple White taille 42. Portées 3 fois, semelle impeccable, boîte originale fournie.",price_min:55,price_recommended:75,price_max:110,similar_count:248};
+
 async function callAPI() {
+  if (!localStorage.getItem('lq_apikey')) {
+    showResult(DEMO_RESULT);
+    return;
+  }
   const contents = images.map(img => ({type:"image",source:{type:"base64",media_type:img.file.type||"image/jpeg",data:img.url.split(',')[1]}}));
   const prompt = `Expert revente mode. Analyse ces images. Retourne UNIQUEMENT un JSON valide sans markdown:
 {"brand":"marque","category":"Vêtement/Chaussures/Accessoire/Sac","size":"taille","color":"couleur","material":"matière","condition":"Neuf avec étiquettes/Excellent état/Très bon état/Bon état/État correct","style":"style","tags":["t1","t2","t3","t4","t5"],"title":"titre max 55 car","description":"3-4 phrases percutantes","price_min":0,"price_recommended":0,"price_max":0,"similar_count":0}
@@ -979,7 +985,7 @@ Prix en euros marché français Vinted/Leboncoin.`;
     showResult(JSON.parse(raw));
   } catch(e) {
     showToast('Analyse échouée — données demo affichées');
-    showResult({brand:"Nike",category:"Chaussures",size:"42",color:"Triple White",material:"Cuir / mesh",condition:"Excellent état",style:"Streetwear",tags:["nike","airmax","sneakers","blanc","sport"],title:"Nike Air Max 90 Triple White — T.42",description:"Paire de Nike Air Max 90 Triple White taille 42. Portées 3 fois, semelle impeccable, boîte originale fournie.",price_min:55,price_recommended:75,price_max:110,similar_count:248});
+    showResult(DEMO_RESULT);
   }
 }
 
