@@ -702,13 +702,20 @@ const QR = {
 // ─── STATE ──────────────────────────────────────────
 let images = [], articleCount = 0, currentConvId = null, currentFilter = 'all', detailOrigin = 'home';
 let userListings = [];
+let listingOverrides = {};
 
 // ─── LOCALSTORAGE ────────────────────────────────────
-function allListings() { return [...userListings, ...LISTINGS]; }
+function allListings() {
+  const demoes = LISTINGS
+    .filter(l => listingOverrides[l.id] !== 'deleted')
+    .map(l => listingOverrides[l.id] ? {...l, status: listingOverrides[l.id]} : l);
+  return [...userListings, ...demoes];
+}
 
 function saveUserData() {
   try {
     localStorage.setItem('lq_listings', JSON.stringify(userListings));
+    localStorage.setItem('lq_overrides', JSON.stringify(listingOverrides));
     const convData = CONVERSATIONS.map(c => ({id:c.id, messages:c.messages, unread:c.unread}));
     localStorage.setItem('lq_convs', JSON.stringify(convData));
     localStorage.setItem('lq_count', articleCount);
@@ -726,6 +733,8 @@ function loadSavedData() {
     });
     const lcount = localStorage.getItem('lq_count');
     if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
+    const lo = localStorage.getItem('lq_overrides');
+    if (lo) listingOverrides = JSON.parse(lo);
   } catch(e) {}
   updateApiKeyStatus();
 }
@@ -765,23 +774,28 @@ function showDetailMenu() {
 }
 
 function confirmArchive() {
-  const l = userListings.find(l => l.id === delTargetId);
-  if (l) { l.status = 'archived'; saveUserData(); buildCards(); detailGoBack(); }
+  const ul = userListings.find(l => l.id === delTargetId);
+  if (ul) ul.status = 'archived';
+  else listingOverrides[delTargetId] = 'archived';
+  saveUserData(); buildCards(); detailGoBack();
   document.getElementById('delOverlay').style.display = 'none';
   showToast('Annonce archivée');
 }
 
 function confirmUnarchive() {
-  const l = userListings.find(l => l.id === delTargetId);
-  if (l) { l.status = 'pub'; saveUserData(); buildCards(); detailGoBack(); }
+  const ul = userListings.find(l => l.id === delTargetId);
+  if (ul) ul.status = 'pub';
+  else delete listingOverrides[delTargetId];
+  saveUserData(); buildCards(); detailGoBack();
   document.getElementById('delOverlay').style.display = 'none';
   showToast('Annonce remise en ligne ✓');
 }
 
 function confirmDelete() {
-  userListings = userListings.filter(l => l.id !== delTargetId);
-  saveUserData();
-  buildCards();
+  const isDemo = LISTINGS.some(l => l.id === delTargetId);
+  if (isDemo) listingOverrides[delTargetId] = 'deleted';
+  else userListings = userListings.filter(l => l.id !== delTargetId);
+  saveUserData(); buildCards();
   document.getElementById('delOverlay').style.display = 'none';
   detailGoBack();
   showToast('Annonce supprimée');
