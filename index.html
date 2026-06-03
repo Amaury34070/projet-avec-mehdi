@@ -931,7 +931,7 @@ function resetPost() {
 // ─── AI ANALYSIS ────────────────────────────────────
 async function startAI() {
   if (!images.length) { showToast('Importe au moins une photo'); return; }
-  if (!localStorage.getItem('lq_apikey')) { showApiModal(); return; }
+  if (!localStorage.getItem('lq_apikey')) { showToast('Mode démo — configure ta clé API dans Profil pour une vraie analyse'); }
   document.getElementById('aiBtn').disabled = true;
   document.getElementById('aiTxt').textContent = 'Analyse en cours...';
   document.getElementById('aiShimmer').style.display = 'block';
