@@ -437,6 +437,48 @@ input[type=file]{display:none;}
 .goal-preset{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:8px 4px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;}
 .goal-preset:active{background:var(--s3);}
 .goal-save-btn{width:100%;background:var(--red);border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+/* Pace */
+.goal-pace-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px;margin:0 16px 12px;}
+.goal-pace-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.goal-pace-status{font-size:13px;font-weight:700;margin-bottom:3px;}
+.goal-pace-proj{font-size:11px;color:var(--t2);}
+.goal-pace-day{font-size:11px;font-weight:600;color:var(--t3);background:var(--s2);padding:4px 9px;border-radius:7px;flex-shrink:0;}
+.goal-pace-tracks{display:flex;flex-direction:column;gap:7px;}
+.goal-pace-track-row{display:flex;align-items:center;gap:8px;}
+.goal-pace-track-lbl{font-size:10px;color:var(--t3);width:32px;flex-shrink:0;}
+.goal-pace-track-bg{flex:1;height:7px;background:var(--s2);border-radius:4px;overflow:hidden;}
+.goal-pace-track-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+/* AI Coach */
+.goal-ai-btn{width:100%;padding:14px 18px;background:linear-gradient(135deg,#1a0830,#2d0a1e);border:1px solid rgba(254,44,85,.35);border-radius:14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .15s;position:relative;overflow:hidden;}
+.goal-ai-btn:not(:disabled):active{transform:scale(.98);}
+.goal-ai-btn:disabled{opacity:.55;cursor:not-allowed;}
+.goal-ai-card{background:linear-gradient(135deg,rgba(26,8,48,.95),rgba(45,10,30,.95));border:1px solid rgba(254,44,85,.25);border-radius:16px;padding:14px;margin:0 16px 14px;}
+.goal-ai-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.goal-ai-card-title{font-size:13px;font-weight:700;}
+.goal-ai-card-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.goal-ai-score{background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.25);border-radius:8px;padding:4px 10px;font-size:14px;font-weight:800;color:var(--red);}
+.goal-ai-pronostic{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.55;margin-bottom:11px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;font-style:italic;}
+.goal-ai-conseil-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px;}
+.goal-ai-conseil-row:last-child{margin-bottom:0;}
+.goal-ai-conseil-num{width:21px;height:21px;background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--red);flex-shrink:0;margin-top:2px;}
+.goal-ai-conseil-txt{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.5;}
+/* Top ventes */
+.goal-top-row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--b);}
+.goal-top-row:last-child{border-bottom:none;}
+.goal-top-rank{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.goal-top-name{flex:1;font-size:13px;font-weight:600;}
+.goal-top-brand{font-size:10px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:1px;}
+.goal-top-price{font-size:15px;font-weight:800;color:var(--green);}
+/* Badges */
+.goal-badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 14px;}
+.goal-badge{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px 8px;text-align:center;}
+.goal-badge.unlocked{border-color:rgba(254,44,85,.2);background:rgba(254,44,85,.04);}
+.goal-badge-icon{font-size:26px;margin-bottom:5px;filter:grayscale(1);opacity:.22;}
+.goal-badge.unlocked .goal-badge-icon{filter:none;opacity:1;}
+.goal-badge-name{font-size:10px;font-weight:700;color:var(--t3);}
+.goal-badge.unlocked .goal-badge-name{color:var(--t);}
+.goal-badge-desc{font-size:9px;color:var(--t3);margin-top:2px;line-height:1.3;}
+.goal-badge.unlocked .goal-badge-desc{color:var(--t2);}
 
 
 </style>
@@ -696,15 +738,10 @@ input[type=file]{display:none;}
   <div class="scroll">
     <div class="goal-month-hdr" id="goalMonthHdr">Juin 2026</div>
 
-    <!-- Anneau hero -->
+    <!-- Anneau -->
     <div class="goal-ring-wrap">
       <svg class="goal-ring" viewBox="0 0 120 120">
-        <defs>
-          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#ff7070"/>
-            <stop offset="100%" stop-color="#fe2c55"/>
-          </linearGradient>
-        </defs>
+        <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff7070"/><stop offset="100%" stop-color="#fe2c55"/></linearGradient></defs>
         <circle class="goal-ring-bg" cx="60" cy="60" r="45"/>
         <circle class="goal-ring-fill" id="goalRingFill" cx="60" cy="60" r="45" stroke="url(#ringGrad)"/>
       </svg>
@@ -715,7 +752,7 @@ input[type=file]{display:none;}
     </div>
     <div class="goal-hero-sub" id="goalHeroSub">Configure ton objectif mensuel ✏️</div>
 
-    <!-- Cartes de progression -->
+    <!-- 2 cartes progression -->
     <div class="goal-prog-card no-goal" id="goalCACard" onclick="openGoalEdit()">
       <div class="goal-prog-header">
         <div style="display:flex;align-items:center;gap:10px">
@@ -726,7 +763,6 @@ input[type=file]{display:none;}
       </div>
       <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalCABarFill" style="width:0%"></div></div>
     </div>
-
     <div class="goal-prog-card no-goal" id="goalSalesCard" onclick="openGoalEdit()">
       <div class="goal-prog-header">
         <div style="display:flex;align-items:center;gap:10px">
@@ -738,23 +774,64 @@ input[type=file]{display:none;}
       <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalSalesBarFill" style="width:0%;background:#60a5fa"></div></div>
     </div>
 
-    <!-- Stats ce mois -->
-    <div class="sec-hdr" style="margin-top:6px"><div class="sec-title">Ce mois</div></div>
+    <!-- Carte rythme -->
+    <div class="goal-pace-card" id="goalPaceCard" style="display:none">
+      <div class="goal-pace-header">
+        <div><div class="goal-pace-status" id="goalPaceStatus"></div><div class="goal-pace-proj" id="goalPaceProj"></div></div>
+        <div class="goal-pace-day" id="goalPaceDay"></div>
+      </div>
+      <div class="goal-pace-tracks">
+        <div class="goal-pace-track-row"><div class="goal-pace-track-lbl">Temps</div><div class="goal-pace-track-bg"><div class="goal-pace-track-fill" id="goalPaceBarTime" style="width:0%;background:#60a5fa"></div></div></div>
+        <div class="goal-pace-track-row"><div class="goal-pace-track-lbl">CA</div><div class="goal-pace-track-bg"><div class="goal-pace-track-fill" id="goalPaceBarProj" style="width:0%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Bouton IA -->
+    <div style="padding:0 16px 12px">
+      <button class="goal-ai-btn" id="goalAIBtn" onclick="analyzeWithAI()">
+        <div class="ai-shimmer" id="goalAIShimmer" style="display:none"></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span id="goalAIBtnTxt">🤖 Analyser mes ventes avec l'IA</span>
+      </button>
+    </div>
+
+    <!-- Carte résultat IA -->
+    <div class="goal-ai-card" id="goalAICard" style="display:none">
+      <div class="goal-ai-card-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:20px">🤖</span>
+          <div><div class="goal-ai-card-title">Coach IA</div><div class="goal-ai-card-sub" id="goalAIStatut"></div></div>
+        </div>
+        <div class="goal-ai-score" id="goalAIScore"></div>
+      </div>
+      <div class="goal-ai-pronostic" id="goalAIPronostic"></div>
+      <div id="goalAIConseils"></div>
+    </div>
+
+    <!-- Stats mois -->
+    <div class="sec-hdr" style="margin-top:4px"><div class="sec-title">Ce mois</div></div>
     <div class="stats-strip" style="padding-top:0">
       <div class="stat-box"><div class="stat-val" id="goalNbSalesVal">0</div><div class="stat-lbl">Ventes</div></div>
       <div class="stat-box"><div class="stat-val" id="goalAvgPriceVal">--</div><div class="stat-lbl">Prix moy.</div></div>
       <div class="stat-box"><div class="stat-val" id="goalNbActiveVal">0</div><div class="stat-lbl">En ligne</div></div>
     </div>
 
+    <!-- Top ventes ce mois -->
+    <div id="goalTopSalesSection" style="display:none">
+      <div class="sec-hdr"><div class="sec-title">Top ventes du mois</div></div>
+      <div class="goal-chart-card" style="padding:4px 14px 8px"><div id="goalTopSalesList"></div></div>
+    </div>
+
     <!-- Graphique 6 mois -->
     <div class="sec-hdr"><div class="sec-title">6 derniers mois</div></div>
     <div class="goal-chart-card">
-      <div class="goal-chart-lbl-row">
-        <div class="goal-chart-title">CA mensuel</div>
-        <div class="goal-chart-total" id="goalChartTotal"></div>
-      </div>
+      <div class="goal-chart-lbl-row"><div class="goal-chart-title">CA mensuel</div><div class="goal-chart-total" id="goalChartTotal"></div></div>
       <div class="goal-chart-bars" id="goalChartBars"></div>
     </div>
+
+    <!-- Badges -->
+    <div class="sec-hdr"><div class="sec-title">Badges</div><div class="sec-link" id="goalBadgeCount"></div></div>
+    <div class="goal-badges" id="goalBadges"></div>
 
     <!-- Records -->
     <div class="sec-hdr"><div class="sec-title">Records</div></div>
@@ -762,12 +839,6 @@ input[type=file]{display:none;}
       <div class="goal-record-card"><div class="goal-record-icon">🏆</div><div class="goal-record-val" id="recBestMonth">-- €</div><div class="goal-record-lbl">Meilleur mois</div></div>
       <div class="goal-record-card"><div class="goal-record-icon">⚡</div><div class="goal-record-val" id="recBestSale">-- €</div><div class="goal-record-lbl">Meilleure vente</div></div>
       <div class="goal-record-card"><div class="goal-record-icon">🔥</div><div class="goal-record-val" id="recStreak">--</div><div class="goal-record-lbl">Mois consécutifs</div></div>
-    </div>
-
-    <!-- Conseil du moment -->
-    <div class="goal-tip-card" id="goalTipCard" style="display:none">
-      <div class="goal-tip-icon">💡</div>
-      <div class="goal-tip-text" id="goalTipText"></div>
     </div>
 
     <!-- Historique -->
@@ -1677,6 +1748,15 @@ function voirArticle() {
 }
 
 // ─── OBJECTIFS ───────────────────────────────────────
+const BADGES_DEF = [
+  {id:'b_first',  icon:'🎯', name:'Premier pas',  desc:'1ère vente réalisée',       check:(s)=>s.length>=1},
+  {id:'b_ten',    icon:'🛒', name:'10 ventes',     desc:'10 articles vendus',        check:(s)=>s.length>=10},
+  {id:'b_streak', icon:'🔥', name:'En feu !',      desc:'3 mois consécutifs',        check:(s,str)=>str>=3},
+  {id:'b_1k',     icon:'💰', name:'1 000 €',       desc:'CA cumulé dépassé',         check:(s)=>s.reduce((a,x)=>a+x.price,0)>=1000},
+  {id:'b_luxury', icon:'💎', name:'Luxe',           desc:'Une vente à +100 €',        check:(s)=>s.some(x=>x.price>=100)},
+  {id:'b_pro',    icon:'🏆', name:'Pro vendeur',   desc:'50 articles vendus',        check:(s)=>s.length>=50},
+];
+
 function updateGoalsPage() {
   const now = new Date();
   const monthStr = now.toISOString().slice(0,7);
@@ -1685,107 +1765,134 @@ function updateGoalsPage() {
   const nb = monthSales.length;
   const avg = nb>0 ? Math.round(ca/nb) : 0;
 
-  // En-tête mois
   const monthName = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
   document.getElementById('goalMonthHdr').textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1);
 
-  // Anneau (basé sur CA)
+  // Anneau
   const caPct = monthlyGoal>0 ? Math.min(100,Math.round(ca/monthlyGoal*100)) : 0;
   document.getElementById('goalRingFill').style.strokeDashoffset = 283*(1-caPct/100);
   document.getElementById('goalPct').textContent = monthlyGoal>0 ? caPct+'%' : '--';
 
-  // Sous-titre héro
-  const sub = document.getElementById('goalHeroSub');
-  if (!monthlyGoal) {
-    sub.textContent = 'Configure ton objectif mensuel ✏️';
-    sub.style.color = 'var(--t2)';
-  } else if (ca>=monthlyGoal) {
-    sub.textContent = '🎉 Objectif atteint ! +'+(ca-monthlyGoal)+' € au-delà';
-    sub.style.color = 'var(--green)';
-  } else {
-    const rem = monthlyGoal-ca;
-    const daysLeft = new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
-    sub.textContent = 'Il te manque '+rem+' € — encore '+daysLeft+' jour'+(daysLeft>1?'s':'')+' ce mois';
-    sub.style.color = 'var(--t2)';
+  // Héro sub
+  const sub=document.getElementById('goalHeroSub');
+  if (!monthlyGoal) { sub.textContent='Configure ton objectif mensuel ✏️'; sub.style.color='var(--t2)'; }
+  else if (ca>=monthlyGoal) { sub.textContent='🎉 Objectif atteint ! +'+(ca-monthlyGoal)+' € au-delà'; sub.style.color='var(--green)'; }
+  else {
+    const daysLeft=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
+    sub.textContent='Il te manque '+(monthlyGoal-ca)+' € — encore '+daysLeft+' jour'+(daysLeft>1?'s':'')+' ce mois';
+    sub.style.color='var(--t2)';
   }
 
   // Carte CA
-  const caCard=document.getElementById('goalCACard'), caSub=document.getElementById('goalCASub');
-  const caPctEl=document.getElementById('goalCAPct'), caBar=document.getElementById('goalCABarFill');
-  if (!monthlyGoal) {
-    caCard.className='goal-prog-card no-goal'; caSub.textContent='Objectif non défini';
-    caPctEl.textContent='Définir →'; caBar.style.width='0%';
-  } else {
-    caCard.className='goal-prog-card'+(ca>=monthlyGoal?' done':'');
-    caSub.textContent=ca+' € / '+monthlyGoal+' €';
-    caPctEl.textContent=caPct+'%'; caBar.style.width=caPct+'%';
-  }
+  const caCard=document.getElementById('goalCACard'),caSub=document.getElementById('goalCASub'),caPctEl=document.getElementById('goalCAPct'),caBar=document.getElementById('goalCABarFill');
+  if (!monthlyGoal) { caCard.className='goal-prog-card no-goal'; caSub.textContent='Objectif non défini'; caPctEl.textContent='Définir →'; caBar.style.width='0%'; }
+  else { caCard.className='goal-prog-card'+(ca>=monthlyGoal?' done':''); caSub.textContent=ca+' € / '+monthlyGoal+' €'; caPctEl.textContent=caPct+'%'; caBar.style.width=caPct+'%'; }
 
   // Carte ventes
-  const sCard=document.getElementById('goalSalesCard'), sSub=document.getElementById('goalSalesSub');
-  const sPctEl=document.getElementById('goalSalesPct'), sBar=document.getElementById('goalSalesBarFill');
-  const sPct = salesGoal>0 ? Math.min(100,Math.round(nb/salesGoal*100)) : 0;
-  if (!salesGoal) {
-    sCard.className='goal-prog-card no-goal'; sSub.textContent='Objectif non défini';
-    sPctEl.textContent='Définir →'; sBar.style.width='0%';
-  } else {
-    sCard.className='goal-prog-card'+(nb>=salesGoal?' done':'');
-    sSub.textContent=nb+' / '+salesGoal+' vente'+(salesGoal>1?'s':'');
-    sPctEl.textContent=sPct+'%'; sBar.style.width=sPct+'%';
-  }
+  const sCard=document.getElementById('goalSalesCard'),sSub=document.getElementById('goalSalesSub'),sPctEl=document.getElementById('goalSalesPct'),sBar=document.getElementById('goalSalesBarFill');
+  const sPct=salesGoal>0?Math.min(100,Math.round(nb/salesGoal*100)):0;
+  if (!salesGoal) { sCard.className='goal-prog-card no-goal'; sSub.textContent='Objectif non défini'; sPctEl.textContent='Définir →'; sBar.style.width='0%'; }
+  else { sCard.className='goal-prog-card'+(nb>=salesGoal?' done':''); sSub.textContent=nb+' / '+salesGoal+' vente'+(salesGoal>1?'s':''); sPctEl.textContent=sPct+'%'; sBar.style.width=sPct+'%'; }
+
+  // Rythme
+  updatePaceCard(ca, now);
 
   // Stats
   document.getElementById('goalNbSalesVal').textContent=nb;
   document.getElementById('goalAvgPriceVal').textContent=avg>0?avg+' €':'--';
   document.getElementById('goalNbActiveVal').textContent=allListings().filter(l=>l.status!=='archived').length;
 
+  // Top ventes
+  updateTopSales(monthSales);
+
   // Graphique
   buildGoalChart(monthStr);
 
-  // Calcul par mois (pour records + historique)
+  // Par mois
   const byMonth={};
-  sales.forEach(s=>{
-    const k=s.date.slice(0,7);
-    if(!byMonth[k]) byMonth[k]={total:0,count:0};
-    byMonth[k].total+=s.price; byMonth[k].count++;
-  });
+  sales.forEach(s=>{const k=s.date.slice(0,7);if(!byMonth[k])byMonth[k]={total:0,count:0};byMonth[k].total+=s.price;byMonth[k].count++;});
 
-  // Records
-  const bestMonthCA = sales.length ? Math.max(...Object.values(byMonth).map(m=>m.total)) : 0;
-  const bestSale = sales.length ? Math.max(...sales.map(s=>s.price)) : 0;
-  const streak = computeStreak(byMonth);
-  document.getElementById('recBestMonth').textContent = bestMonthCA>0 ? bestMonthCA+' €' : '-- €';
-  document.getElementById('recBestSale').textContent = bestSale>0 ? bestSale+' €' : '-- €';
-  document.getElementById('recStreak').textContent = monthlyGoal>0 ? (streak>0?streak+'🔥':'0') : '--';
+  // Records + streak
+  const bestMonthCA=sales.length?Math.max(...Object.values(byMonth).map(m=>m.total)):0;
+  const bestSale=sales.length?Math.max(...sales.map(s=>s.price)):0;
+  const streak=computeStreak(byMonth);
+  document.getElementById('recBestMonth').textContent=bestMonthCA>0?bestMonthCA+' €':'-- €';
+  document.getElementById('recBestSale').textContent=bestSale>0?bestSale+' €':'-- €';
+  document.getElementById('recStreak').textContent=monthlyGoal>0?(streak>0?streak+'🔥':'0'):'--';
 
-  // Conseil contextuel
-  const tip = buildTip(ca,nb,avg,bestMonthCA,streak,now.getDate());
-  const tipCard=document.getElementById('goalTipCard'), tipText=document.getElementById('goalTipText');
-  if (tip) { tipCard.style.display='flex'; tipText.innerHTML=tip; }
-  else tipCard.style.display='none';
+  // Badges
+  updateBadges(streak);
 
   // Historique
   buildGoalHistory(monthStr, byMonth);
 }
 
+function updatePaceCard(ca, now) {
+  const paceCard=document.getElementById('goalPaceCard');
+  if (!monthlyGoal) { paceCard.style.display='none'; return; }
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const day=now.getDate();
+  const pctTime=Math.round(day/daysInMonth*100);
+  const projected=day>0?Math.round(ca/day*daysInMonth):0;
+  const projPct=Math.min(150,Math.round(projected/monthlyGoal*100));
+  paceCard.style.display='block';
+  let status,color;
+  if (ca>=monthlyGoal) {status='🎉 Objectif atteint !';color='var(--green)';}
+  else if (projected>=monthlyGoal) {status='🚀 Tu es en avance';color='var(--green)';}
+  else if (projected>=monthlyGoal*.8) {status='👍 Dans les temps';color='var(--amber)';}
+  else {status='⚠️ Tu prends du retard';color='var(--red)';}
+  document.getElementById('goalPaceStatus').textContent=status;
+  document.getElementById('goalPaceStatus').style.color=color;
+  document.getElementById('goalPaceProj').textContent='Projection fin du mois : '+projected+' €';
+  document.getElementById('goalPaceDay').textContent='Jour '+day+'/'+daysInMonth;
+  document.getElementById('goalPaceBarTime').style.width=pctTime+'%';
+  const projBar=document.getElementById('goalPaceBarProj');
+  projBar.style.width=Math.min(projPct,100)+'%';
+  projBar.style.background=projected>=monthlyGoal?'var(--green)':(projected>=monthlyGoal*.8?'var(--amber)':'var(--red)');
+}
+
+function updateTopSales(monthSales) {
+  const sec=document.getElementById('goalTopSalesSection');
+  if (!monthSales.length) {sec.style.display='none';return;}
+  sec.style.display='block';
+  const top3=[...monthSales].sort((a,b)=>b.price-a.price).slice(0,3);
+  const ranks=['🥇','🥈','🥉'];
+  document.getElementById('goalTopSalesList').innerHTML=top3.map((s,i)=>`
+    <div class="goal-top-row">
+      <div class="goal-top-rank">${ranks[i]}</div>
+      <div><div class="goal-top-name">${s.name}</div>${s.brand?`<div class="goal-top-brand">${s.brand}</div>`:''}</div>
+      <div class="goal-top-price">+${s.price} €</div>
+    </div>`).join('');
+}
+
+function updateBadges(streak) {
+  const unlocked=BADGES_DEF.map(b=>b.id==='b_streak'?b.check(sales,streak):b.check(sales));
+  const count=unlocked.filter(Boolean).length;
+  document.getElementById('goalBadgeCount').textContent=count+'/'+BADGES_DEF.length;
+  document.getElementById('goalBadges').innerHTML=BADGES_DEF.map((b,i)=>`
+    <div class="goal-badge ${unlocked[i]?'unlocked':''}">
+      <div class="goal-badge-icon">${b.icon}</div>
+      <div class="goal-badge-name">${b.name}</div>
+      <div class="goal-badge-desc">${b.desc}</div>
+    </div>`).join('');
+}
+
 function buildGoalChart(currentMonthStr) {
-  const now = new Date();
-  const months = [];
+  const now=new Date(); const months=[];
   for (let i=5;i>=0;i--) {
-    const d = new Date(now.getFullYear(),now.getMonth()-i,1);
-    const key = d.toISOString().slice(0,7);
-    const label = d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','');
-    const ca = sales.filter(s=>s.date.startsWith(key)).reduce((a,s)=>a+s.price,0);
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=d.toISOString().slice(0,7);
+    const label=d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','');
+    const ca=sales.filter(s=>s.date.startsWith(key)).reduce((a,s)=>a+s.price,0);
     months.push({key,label,ca,isCurrent:key===currentMonthStr});
   }
-  const maxCA = Math.max(...months.map(m=>m.ca),1);
-  const totalCA6 = months.reduce((a,m)=>a+m.ca,0);
-  document.getElementById('goalChartTotal').textContent = totalCA6>0 ? totalCA6+' € sur 6 mois' : '';
-  document.getElementById('goalChartBars').innerHTML = months.map(m=>{
-    const h = Math.max(Math.round(m.ca/maxCA*100),5);
-    const hit = monthlyGoal>0&&m.ca>=monthlyGoal;
-    const bg = m.isCurrent?'var(--red)':(hit?'rgba(74,222,128,.4)':'var(--s3)');
-    const glow = m.isCurrent?'filter:drop-shadow(0 0 6px rgba(254,44,85,.5));':'';
+  const maxCA=Math.max(...months.map(m=>m.ca),1);
+  document.getElementById('goalChartTotal').textContent=months.reduce((a,m)=>a+m.ca,0)>0?months.reduce((a,m)=>a+m.ca,0)+' € sur 6 mois':'';
+  document.getElementById('goalChartBars').innerHTML=months.map(m=>{
+    const h=Math.max(Math.round(m.ca/maxCA*100),5);
+    const hit=monthlyGoal>0&&m.ca>=monthlyGoal;
+    const bg=m.isCurrent?'var(--red)':(hit?'rgba(74,222,128,.4)':'var(--s3)');
+    const glow=m.isCurrent?'filter:drop-shadow(0 0 6px rgba(254,44,85,.5));':'';
     return `<div class="goal-chart-col">
       <div style="font-size:9px;font-weight:600;color:${m.isCurrent?'var(--red)':(m.ca>0?'var(--t3)':'transparent')};margin-bottom:3px">${m.ca>0?m.ca+'€':''}</div>
       <div class="goal-chart-bar" style="height:${h}%;background:${bg};${glow}width:100%"></div>
@@ -1795,23 +1902,21 @@ function buildGoalChart(currentMonthStr) {
 }
 
 function buildGoalHistory(currentMonthStr, byMonth) {
-  const keys = Object.keys(byMonth).sort().reverse().filter(k=>k!==currentMonthStr);
-  const container = document.getElementById('goalHistoryList');
-  if (!keys.length) { container.innerHTML='<div class="goal-empty">Aucun historique pour l\'instant</div>'; return; }
-  const maxCA = Math.max(...Object.values(byMonth).map(m=>m.total),1);
-  container.innerHTML = keys.map(k=>{
+  const keys=Object.keys(byMonth).sort().reverse().filter(k=>k!==currentMonthStr);
+  const container=document.getElementById('goalHistoryList');
+  if (!keys.length) {container.innerHTML='<div class="goal-empty">Aucun historique pour l\'instant</div>';return;}
+  const maxCA=Math.max(...Object.values(byMonth).map(m=>m.total),1);
+  container.innerHTML=keys.map(k=>{
     const [y,m]=k.split('-');
-    const lbl = new Date(+y,+m-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    const lbl=new Date(+y,+m-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
     const {total,count}=byMonth[k];
     const hit=monthlyGoal>0&&total>=monthlyGoal;
-    const barPct=Math.round(total/maxCA*100);
-    const barColor=hit?'var(--green)':'var(--red)';
     const badge=monthlyGoal>0?`<div class="goal-history-badge ${hit?'hit':'miss'}">${hit?'✓ Atteint':'✗ Manqué'}</div>`:'';
     return `<div class="goal-history-row">
       <div class="goal-history-left">
         <div class="goal-history-month">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</div>
         <div class="goal-history-sub">${count} vente${count>1?'s':''}</div>
-        <div class="goal-history-minibar"><div class="goal-history-minibar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+        <div class="goal-history-minibar"><div class="goal-history-minibar-fill" style="width:${Math.round(total/maxCA*100)}%;background:${hit?'var(--green)':'var(--red)'}"></div></div>
       </div>
       <div class="goal-history-right"><div class="goal-history-ca">${total} €</div>${badge}</div>
     </div>`;
@@ -1824,22 +1929,66 @@ function computeStreak(byMonth) {
   for (let i=1;i<=24;i++) {
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const k=d.toISOString().slice(0,7);
-    if ((byMonth[k]?.total||0)>=monthlyGoal) streak++;
+    if((byMonth[k]?.total||0)>=monthlyGoal) streak++;
     else break;
   }
   return streak;
 }
 
-function buildTip(ca, nb, avg, bestMonth, streak, dayOfMonth) {
-  if (!sales.length) return '';
-  if (streak>=3) return `<strong>🔥 Série de ${streak} mois !</strong> Tu maintiens ton objectif depuis ${streak} mois consécutifs. Continue comme ça !`;
-  if (nb>0&&avg>0) {
-    const neededSales = monthlyGoal>0&&ca<monthlyGoal ? Math.ceil((monthlyGoal-ca)/avg) : 0;
-    if (neededSales>0&&dayOfMonth<=25) return `<strong>💡 Conseil :</strong> À ton prix moyen de ${avg} €, il te faut encore <strong>${neededSales} vente${neededSales>1?'s':''}</strong> pour atteindre ton objectif.`;
+async function analyzeWithAI() {
+  const btn=document.getElementById('goalAIBtn'),shimmer=document.getElementById('goalAIShimmer'),btnTxt=document.getElementById('goalAIBtnTxt');
+  if (!localStorage.getItem('lq_apikey')) { showToast('Configure ta clé API dans Profil pour utiliser l\'IA'); return; }
+  btn.disabled=true; shimmer.style.display='block'; btnTxt.textContent='Analyse en cours...';
+  const now=new Date();
+  const monthStr=now.toISOString().slice(0,7);
+  const monthSales=sales.filter(s=>s.date.startsWith(monthStr));
+  const ca=monthSales.reduce((a,s)=>a+s.price,0);
+  const nb=monthSales.length;
+  const avg=nb>0?Math.round(ca/nb):0;
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const history=[];
+  for (let i=5;i>=1;i--) {
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const k=d.toISOString().slice(0,7);
+    const mca=sales.filter(s=>s.date.startsWith(k)).reduce((a,s)=>a+s.price,0);
+    history.push(d.toLocaleDateString('fr-FR',{month:'short'})+' '+mca+'€');
   }
-  if (bestMonth>0&&ca>=bestMonth) return `<strong>🏆 Record !</strong> Ce mois est ton meilleur mois à date avec <strong>${ca} €</strong>.`;
-  if (nb===0&&dayOfMonth>7) return `<strong>💡 Astuce :</strong> Tu n'as pas encore vendu ce mois. Pense à baisser légèrement tes prix pour booster tes ventes.`;
-  return '';
+  const brands=[...new Set(monthSales.map(s=>s.brand).filter(Boolean))].slice(0,3).join(', ')||'variées';
+  const prompt=`Tu es coach expert en revente sur Vinted/Leboncoin/Depop. Analyse les performances de ce vendeur.
+
+Données de ${now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}:
+- CA réalisé: ${ca}€ / objectif: ${monthlyGoal||'non défini'}€
+- Ventes: ${nb} / objectif: ${salesGoal||'non défini'}
+- Prix moyen: ${avg}€ | Jour: ${now.getDate()}/${daysInMonth}
+- Marques vendues: ${brands}
+- Historique 5 mois: ${history.join(', ')||'aucun'}
+- Annonces actives: ${allListings().filter(l=>l.status!=='archived').length}
+
+Retourne UNIQUEMENT ce JSON valide (sans markdown):
+{"statut":"en avance|dans les clous|en retard|objectif atteint","pronostic":"1 phrase percutante max 18 mots","conseils":["conseil ultra-concret 1","conseil ultra-concret 2","conseil ultra-concret 3"],"score":7}`;
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:getApiHeaders(),body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:350,messages:[{role:"user",content:prompt}]})});
+    if (!res.ok) throw new Error('API '+res.status);
+    const data=await res.json();
+    const parsed=JSON.parse(data.content[0].text.trim().replace(/```json|```/g,'').trim());
+    showAIResult(parsed);
+  } catch(e) { showToast('Analyse échouée — vérifie ta connexion'); }
+  finally { btn.disabled=false; shimmer.style.display='none'; btnTxt.textContent='🤖 Réanalyser avec l\'IA'; }
+}
+
+function showAIResult(d) {
+  const emojis={'en avance':'🚀','dans les clous':'👍','en retard':'⚠️','objectif atteint':'🎉'};
+  document.getElementById('goalAIStatut').textContent=(emojis[d.statut]||'📊')+' '+d.statut;
+  document.getElementById('goalAIScore').textContent=(d.score||'?')+'/10';
+  document.getElementById('goalAIPronostic').textContent='"'+(d.pronostic||'')+'"';
+  document.getElementById('goalAIConseils').innerHTML=(d.conseils||[]).map((c,i)=>`
+    <div class="goal-ai-conseil-row">
+      <div class="goal-ai-conseil-num">${i+1}</div>
+      <div class="goal-ai-conseil-txt">${c}</div>
+    </div>`).join('');
+  const card=document.getElementById('goalAICard');
+  card.style.display='block';
+  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
 
 function openGoalEdit() {
