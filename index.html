@@ -371,43 +371,73 @@ input[type=file]{display:none;}
 #conversation .nav { flex-shrink:0; }
 
 /* GOALS */
-.goal-month-hdr{text-align:center;font-size:13px;font-weight:600;color:var(--t2);padding:2px 0 14px;}
-.goal-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 10px;}
+.goal-month-hdr{text-align:center;font-size:13px;font-weight:600;color:var(--t2);padding:2px 0 10px;}
+.goal-ring-wrap{position:relative;width:172px;height:172px;margin:0 auto 6px;}
 .goal-ring{width:100%;height:100%;transform:rotate(-90deg);}
-.goal-ring-bg{fill:none;stroke:var(--s2);stroke-width:11;}
-.goal-ring-fill{fill:none;stroke:var(--red);stroke-width:11;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1);}
+.goal-ring-bg{fill:none;stroke:var(--s2);stroke-width:13;}
+.goal-ring-fill{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);}
 .goal-ring-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.goal-ring-pct{font-size:34px;font-weight:800;letter-spacing:-1.5px;}
-.goal-ring-lbl{font-size:12px;color:var(--t2);margin-top:1px;}
-.goal-nums{display:flex;align-items:baseline;gap:8px;justify-content:center;margin-bottom:14px;}
-.goal-ca-val{font-size:26px;font-weight:800;letter-spacing:-1px;}
-.goal-sep-txt{font-size:14px;color:var(--t3);}
-.goal-target-val{font-size:18px;font-weight:600;color:var(--t3);}
-.goal-info-card{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px 16px;margin:0 16px 16px;font-size:13px;color:var(--t2);line-height:1.5;}
-.goal-info-card strong{color:var(--t);}
-.goal-info-card.done{background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
-.goal-history-row{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid var(--b);}
+.goal-ring-pct{font-size:40px;font-weight:800;letter-spacing:-2px;}
+.goal-ring-tag{font-size:11px;color:var(--t2);margin-top:2px;font-weight:500;}
+.goal-hero-sub{text-align:center;font-size:13px;color:var(--t2);margin-bottom:14px;padding:0 28px;line-height:1.5;}
+.goal-prog-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px;margin:0 16px 10px;cursor:pointer;transition:border-color .15s;}
+.goal-prog-card:active{border-color:var(--b2);}
+.goal-prog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.goal-prog-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.goal-prog-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.goal-prog-sub{font-size:11px;color:var(--t2);}
+.goal-prog-pct{font-size:20px;font-weight:800;color:var(--red);flex-shrink:0;}
+.goal-prog-bar-bg{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.goal-prog-bar-fill{height:100%;background:var(--red);border-radius:3px;transition:width .6s ease;}
+.goal-prog-card.done .goal-prog-pct{color:var(--green);}
+.goal-prog-card.done .goal-prog-bar-fill{background:var(--green);}
+.goal-prog-card.done{border-color:rgba(74,222,128,.2);}
+.goal-prog-card.no-goal .goal-prog-pct{font-size:14px;color:var(--t3);font-weight:600;}
+.goal-chart-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px 14px 10px;margin:0 16px 14px;}
+.goal-chart-lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.goal-chart-title{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;}
+.goal-chart-total{font-size:12px;font-weight:700;color:var(--t);}
+.goal-chart-bars{display:flex;align-items:flex-end;gap:5px;height:72px;}
+.goal-chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.goal-chart-bar{width:100%;border-radius:5px 5px 0 0;min-height:4px;}
+.goal-chart-lbl{font-size:9px;color:var(--t3);white-space:nowrap;}
+.goal-records{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px 14px;}
+.goal-record-card{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px 8px;text-align:center;}
+.goal-record-icon{font-size:22px;margin-bottom:6px;}
+.goal-record-val{font-size:16px;font-weight:800;letter-spacing:-.5px;}
+.goal-record-lbl{font-size:10px;color:var(--t2);margin-top:3px;line-height:1.3;}
+.goal-tip-card{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:14px;padding:13px 14px;margin:0 16px 14px;display:flex;align-items:flex-start;gap:10px;}
+.goal-tip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.goal-tip-text{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.5;}
+.goal-tip-text strong{color:#60a5fa;}
+.goal-history-row{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 2px;border-bottom:1px solid var(--b);}
 .goal-history-row:last-child{border-bottom:none;}
+.goal-history-left{flex:1;}
 .goal-history-month{font-size:13px;font-weight:600;}
 .goal-history-sub{font-size:11px;color:var(--t2);margin-top:2px;}
-.goal-history-right{text-align:right;}
+.goal-history-minibar{height:3px;background:var(--s2);border-radius:2px;margin-top:6px;overflow:hidden;}
+.goal-history-minibar-fill{height:100%;border-radius:2px;}
+.goal-history-right{text-align:right;flex-shrink:0;margin-left:14px;}
 .goal-history-ca{font-size:15px;font-weight:700;}
-.goal-history-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;margin-top:3px;display:inline-block;}
+.goal-history-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;margin-top:4px;display:inline-block;}
 .goal-history-badge.hit{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.2);}
-.goal-history-badge.miss{background:rgba(255,255,255,.06);color:var(--t3);border:1px solid var(--b);}
-.goal-empty{text-align:center;padding:32px 16px;color:var(--t2);font-size:13px;}
-.goal-edit-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
-.goal-edit-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);}
+.goal-history-badge.miss{background:rgba(255,255,255,.05);color:var(--t3);border:1px solid var(--b);}
+.goal-empty{text-align:center;padding:28px 16px;color:var(--t2);font-size:13px;}
+.goal-edit-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}
+.goal-edit-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);max-height:88%;overflow-y:auto;}
 .goal-edit-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
 .goal-edit-title{font-size:16px;font-weight:700;text-align:center;margin-bottom:4px;}
-.goal-edit-sub{font-size:12px;color:var(--t2);text-align:center;margin-bottom:20px;}
-.goal-input-wrap{background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.goal-input-euro{font-size:22px;font-weight:700;color:var(--t3);}
-.goal-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:var(--t);}
-.goal-presets{display:flex;gap:8px;margin-bottom:16px;}
-.goal-preset{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:9px 4px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;}
+.goal-edit-sub{font-size:12px;color:var(--t2);text-align:center;margin-bottom:18px;}
+.goal-edit-section{margin-bottom:20px;}
+.goal-edit-section-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.goal-input-wrap{background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.goal-input-unit{font-size:20px;font-weight:700;color:var(--t3);}
+.goal-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:20px;font-weight:700;color:var(--t);}
+.goal-presets{display:flex;gap:7px;}
+.goal-preset{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:8px 4px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;}
 .goal-preset:active{background:var(--s3);}
-.goal-save-btn{width:100%;background:var(--red);border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;}
+.goal-save-btn{width:100%;background:var(--red);border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+
 
 </style>
 </head>
@@ -665,28 +695,82 @@ input[type=file]{display:none;}
   </div>
   <div class="scroll">
     <div class="goal-month-hdr" id="goalMonthHdr">Juin 2026</div>
+
+    <!-- Anneau hero -->
     <div class="goal-ring-wrap">
       <svg class="goal-ring" viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff7070"/>
+            <stop offset="100%" stop-color="#fe2c55"/>
+          </linearGradient>
+        </defs>
         <circle class="goal-ring-bg" cx="60" cy="60" r="45"/>
-        <circle class="goal-ring-fill" id="goalRingFill" cx="60" cy="60" r="45"/>
+        <circle class="goal-ring-fill" id="goalRingFill" cx="60" cy="60" r="45" stroke="url(#ringGrad)"/>
       </svg>
       <div class="goal-ring-content">
-        <div class="goal-ring-pct" id="goalPct">0%</div>
-        <div class="goal-ring-lbl">atteint</div>
+        <div class="goal-ring-pct" id="goalPct">--</div>
+        <div class="goal-ring-tag">atteint</div>
       </div>
     </div>
-    <div class="goal-nums">
-      <div class="goal-ca-val" id="goalCAVal">0 €</div>
-      <div class="goal-sep-txt">sur</div>
-      <div class="goal-target-val" id="goalTargetVal">-- €</div>
+    <div class="goal-hero-sub" id="goalHeroSub">Configure ton objectif mensuel ✏️</div>
+
+    <!-- Cartes de progression -->
+    <div class="goal-prog-card no-goal" id="goalCACard" onclick="openGoalEdit()">
+      <div class="goal-prog-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="goal-prog-icon" style="background:rgba(254,44,85,.1)">💰</div>
+          <div><div class="goal-prog-title">CA mensuel</div><div class="goal-prog-sub" id="goalCASub">Objectif non défini</div></div>
+        </div>
+        <div class="goal-prog-pct" id="goalCAPct">Définir →</div>
+      </div>
+      <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalCABarFill" style="width:0%"></div></div>
     </div>
-    <div class="goal-info-card" id="goalInfoCard">Définis ton objectif mensuel en appuyant sur ✏️ en haut à droite.</div>
-    <div class="sec-hdr"><div class="sec-title">Ce mois</div></div>
+
+    <div class="goal-prog-card no-goal" id="goalSalesCard" onclick="openGoalEdit()">
+      <div class="goal-prog-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="goal-prog-icon" style="background:rgba(96,165,250,.1)">🛍️</div>
+          <div><div class="goal-prog-title">Ventes ce mois</div><div class="goal-prog-sub" id="goalSalesSub">Objectif non défini</div></div>
+        </div>
+        <div class="goal-prog-pct" id="goalSalesPct" style="color:#60a5fa">Définir →</div>
+      </div>
+      <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalSalesBarFill" style="width:0%;background:#60a5fa"></div></div>
+    </div>
+
+    <!-- Stats ce mois -->
+    <div class="sec-hdr" style="margin-top:6px"><div class="sec-title">Ce mois</div></div>
     <div class="stats-strip" style="padding-top:0">
-      <div class="stat-box"><div class="stat-val" id="goalNbSalesVal">0</div><div class="stat-lbl">Ventes<br>ce mois</div></div>
-      <div class="stat-box"><div class="stat-val" id="goalAvgPriceVal">-- €</div><div class="stat-lbl">Prix<br>moyen</div></div>
-      <div class="stat-box"><div class="stat-val" id="goalNbActiveVal">0</div><div class="stat-lbl">Annonces<br>actives</div></div>
+      <div class="stat-box"><div class="stat-val" id="goalNbSalesVal">0</div><div class="stat-lbl">Ventes</div></div>
+      <div class="stat-box"><div class="stat-val" id="goalAvgPriceVal">--</div><div class="stat-lbl">Prix moy.</div></div>
+      <div class="stat-box"><div class="stat-val" id="goalNbActiveVal">0</div><div class="stat-lbl">En ligne</div></div>
     </div>
+
+    <!-- Graphique 6 mois -->
+    <div class="sec-hdr"><div class="sec-title">6 derniers mois</div></div>
+    <div class="goal-chart-card">
+      <div class="goal-chart-lbl-row">
+        <div class="goal-chart-title">CA mensuel</div>
+        <div class="goal-chart-total" id="goalChartTotal"></div>
+      </div>
+      <div class="goal-chart-bars" id="goalChartBars"></div>
+    </div>
+
+    <!-- Records -->
+    <div class="sec-hdr"><div class="sec-title">Records</div></div>
+    <div class="goal-records">
+      <div class="goal-record-card"><div class="goal-record-icon">🏆</div><div class="goal-record-val" id="recBestMonth">-- €</div><div class="goal-record-lbl">Meilleur mois</div></div>
+      <div class="goal-record-card"><div class="goal-record-icon">⚡</div><div class="goal-record-val" id="recBestSale">-- €</div><div class="goal-record-lbl">Meilleure vente</div></div>
+      <div class="goal-record-card"><div class="goal-record-icon">🔥</div><div class="goal-record-val" id="recStreak">--</div><div class="goal-record-lbl">Mois consécutifs</div></div>
+    </div>
+
+    <!-- Conseil du moment -->
+    <div class="goal-tip-card" id="goalTipCard" style="display:none">
+      <div class="goal-tip-icon">💡</div>
+      <div class="goal-tip-text" id="goalTipText"></div>
+    </div>
+
+    <!-- Historique -->
     <div class="sec-hdr"><div class="sec-title">Historique</div></div>
     <div style="padding:0 16px 32px"><div id="goalHistoryList"></div></div>
   </div>
@@ -697,19 +781,35 @@ input[type=file]{display:none;}
 <div class="goal-edit-overlay" id="goalEditOverlay">
   <div class="goal-edit-sheet">
     <div class="goal-edit-handle"></div>
-    <div class="goal-edit-title">Objectif mensuel</div>
-    <div class="goal-edit-sub">Combien veux-tu gagner ce mois ?</div>
-    <div class="goal-input-wrap">
-      <div class="goal-input-euro">€</div>
-      <input class="goal-input" id="goalInput" type="number" placeholder="500" inputmode="numeric">
+    <div class="goal-edit-title">Mes objectifs</div>
+    <div class="goal-edit-sub">Définis tes cibles mensuelles</div>
+    <div class="goal-edit-section">
+      <div class="goal-edit-section-lbl">💰 CA mensuel cible</div>
+      <div class="goal-input-wrap">
+        <div class="goal-input-unit">€</div>
+        <input class="goal-input" id="goalInput" type="number" placeholder="500" inputmode="numeric">
+      </div>
+      <div class="goal-presets">
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=200">200</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=500">500</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=1000">1 000</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=2000">2 000</div>
+      </div>
     </div>
-    <div class="goal-presets">
-      <div class="goal-preset" onclick="document.getElementById('goalInput').value=200">200 €</div>
-      <div class="goal-preset" onclick="document.getElementById('goalInput').value=500">500 €</div>
-      <div class="goal-preset" onclick="document.getElementById('goalInput').value=1000">1 000 €</div>
-      <div class="goal-preset" onclick="document.getElementById('goalInput').value=2000">2 000 €</div>
+    <div class="goal-edit-section">
+      <div class="goal-edit-section-lbl">🛍️ Nombre de ventes cible</div>
+      <div class="goal-input-wrap">
+        <div class="goal-input-unit">#</div>
+        <input class="goal-input" id="salesGoalInput" type="number" placeholder="10" inputmode="numeric">
+      </div>
+      <div class="goal-presets">
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=5">5</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=10">10</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=20">20</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=30">30</div>
+      </div>
     </div>
-    <button class="goal-save-btn" onclick="saveGoalFromInput()">Enregistrer</button>
+    <button class="goal-save-btn" onclick="saveGoalFromInput()">Enregistrer mes objectifs</button>
   </div>
 </div>
 
@@ -830,6 +930,7 @@ let userListings = [];
 let listingOverrides = {};
 let sales = [];
 let monthlyGoal = 0;
+let salesGoal = 0;
 
 // ─── LOCALSTORAGE ────────────────────────────────────
 function allListings() {
@@ -865,6 +966,8 @@ function loadSavedData() {
     if (lo) listingOverrides = JSON.parse(lo);
     const lg = localStorage.getItem('lq_goal');
     if (lg) monthlyGoal = parseInt(lg);
+    const lsg = localStorage.getItem('lq_sales_goal');
+    if (lsg) salesGoal = parseInt(lsg);
     const lsales = localStorage.getItem('lq_sales');
     if (lsales) sales = JSON.parse(lsales);
     else {
@@ -1577,74 +1680,184 @@ function voirArticle() {
 function updateGoalsPage() {
   const now = new Date();
   const monthStr = now.toISOString().slice(0,7);
-  const monthSales = sales.filter(s => s.date.startsWith(monthStr));
+  const monthSales = sales.filter(s=>s.date.startsWith(monthStr));
   const ca = monthSales.reduce((a,s)=>a+s.price,0);
   const nb = monthSales.length;
-  const avg = nb > 0 ? Math.round(ca/nb) : 0;
+  const avg = nb>0 ? Math.round(ca/nb) : 0;
 
+  // En-tête mois
   const monthName = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
   document.getElementById('goalMonthHdr').textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1);
 
-  const pct = monthlyGoal > 0 ? Math.min(100, Math.round(ca/monthlyGoal*100)) : 0;
-  document.getElementById('goalRingFill').style.strokeDashoffset = 283*(1-pct/100);
-  document.getElementById('goalPct').textContent = pct+'%';
-  document.getElementById('goalCAVal').textContent = ca+' €';
-  document.getElementById('goalTargetVal').textContent = monthlyGoal > 0 ? monthlyGoal+' €' : '-- €';
+  // Anneau (basé sur CA)
+  const caPct = monthlyGoal>0 ? Math.min(100,Math.round(ca/monthlyGoal*100)) : 0;
+  document.getElementById('goalRingFill').style.strokeDashoffset = 283*(1-caPct/100);
+  document.getElementById('goalPct').textContent = monthlyGoal>0 ? caPct+'%' : '--';
 
-  const card = document.getElementById('goalInfoCard');
-  if (monthlyGoal <= 0) {
-    card.className='goal-info-card';
-    card.innerHTML='Définis ton objectif mensuel en appuyant sur ✏️ en haut à droite.';
-  } else if (ca >= monthlyGoal) {
-    card.className='goal-info-card done';
-    card.innerHTML='🎉 Objectif atteint ! Tu as même fait <strong>+'+(ca-monthlyGoal)+' €</strong> de plus.';
+  // Sous-titre héro
+  const sub = document.getElementById('goalHeroSub');
+  if (!monthlyGoal) {
+    sub.textContent = 'Configure ton objectif mensuel ✏️';
+    sub.style.color = 'var(--t2)';
+  } else if (ca>=monthlyGoal) {
+    sub.textContent = '🎉 Objectif atteint ! +'+(ca-monthlyGoal)+' € au-delà';
+    sub.style.color = 'var(--green)';
   } else {
-    const remaining = monthlyGoal-ca;
+    const rem = monthlyGoal-ca;
     const daysLeft = new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
-    card.className='goal-info-card';
-    card.innerHTML='Il te manque <strong>'+remaining+' €</strong> — encore '+daysLeft+' jour'+(daysLeft>1?'s':'')+' ce mois.';
+    sub.textContent = 'Il te manque '+rem+' € — encore '+daysLeft+' jour'+(daysLeft>1?'s':'')+' ce mois';
+    sub.style.color = 'var(--t2)';
   }
 
-  document.getElementById('goalNbSalesVal').textContent = nb;
-  document.getElementById('goalAvgPriceVal').textContent = avg > 0 ? avg+' €' : '-- €';
-  document.getElementById('goalNbActiveVal').textContent = allListings().filter(l=>l.status!=='archived').length;
+  // Carte CA
+  const caCard=document.getElementById('goalCACard'), caSub=document.getElementById('goalCASub');
+  const caPctEl=document.getElementById('goalCAPct'), caBar=document.getElementById('goalCABarFill');
+  if (!monthlyGoal) {
+    caCard.className='goal-prog-card no-goal'; caSub.textContent='Objectif non défini';
+    caPctEl.textContent='Définir →'; caBar.style.width='0%';
+  } else {
+    caCard.className='goal-prog-card'+(ca>=monthlyGoal?' done':'');
+    caSub.textContent=ca+' € / '+monthlyGoal+' €';
+    caPctEl.textContent=caPct+'%'; caBar.style.width=caPct+'%';
+  }
+
+  // Carte ventes
+  const sCard=document.getElementById('goalSalesCard'), sSub=document.getElementById('goalSalesSub');
+  const sPctEl=document.getElementById('goalSalesPct'), sBar=document.getElementById('goalSalesBarFill');
+  const sPct = salesGoal>0 ? Math.min(100,Math.round(nb/salesGoal*100)) : 0;
+  if (!salesGoal) {
+    sCard.className='goal-prog-card no-goal'; sSub.textContent='Objectif non défini';
+    sPctEl.textContent='Définir →'; sBar.style.width='0%';
+  } else {
+    sCard.className='goal-prog-card'+(nb>=salesGoal?' done':'');
+    sSub.textContent=nb+' / '+salesGoal+' vente'+(salesGoal>1?'s':'');
+    sPctEl.textContent=sPct+'%'; sBar.style.width=sPct+'%';
+  }
+
+  // Stats
+  document.getElementById('goalNbSalesVal').textContent=nb;
+  document.getElementById('goalAvgPriceVal').textContent=avg>0?avg+' €':'--';
+  document.getElementById('goalNbActiveVal').textContent=allListings().filter(l=>l.status!=='archived').length;
+
+  // Graphique
+  buildGoalChart(monthStr);
+
+  // Calcul par mois (pour records + historique)
+  const byMonth={};
+  sales.forEach(s=>{
+    const k=s.date.slice(0,7);
+    if(!byMonth[k]) byMonth[k]={total:0,count:0};
+    byMonth[k].total+=s.price; byMonth[k].count++;
+  });
+
+  // Records
+  const bestMonthCA = sales.length ? Math.max(...Object.values(byMonth).map(m=>m.total)) : 0;
+  const bestSale = sales.length ? Math.max(...sales.map(s=>s.price)) : 0;
+  const streak = computeStreak(byMonth);
+  document.getElementById('recBestMonth').textContent = bestMonthCA>0 ? bestMonthCA+' €' : '-- €';
+  document.getElementById('recBestSale').textContent = bestSale>0 ? bestSale+' €' : '-- €';
+  document.getElementById('recStreak').textContent = monthlyGoal>0 ? (streak>0?streak+'🔥':'0') : '--';
+
+  // Conseil contextuel
+  const tip = buildTip(ca,nb,avg,bestMonthCA,streak,now.getDate());
+  const tipCard=document.getElementById('goalTipCard'), tipText=document.getElementById('goalTipText');
+  if (tip) { tipCard.style.display='flex'; tipText.innerHTML=tip; }
+  else tipCard.style.display='none';
 
   // Historique
-  const byMonth = {};
-  sales.forEach(s => {
-    const k = s.date.slice(0,7);
-    if (!byMonth[k]) byMonth[k]={total:0,count:0};
-    byMonth[k].total += s.price; byMonth[k].count++;
-  });
-  const hist = Object.keys(byMonth).sort().reverse().filter(k=>k!==monthStr);
-  const container = document.getElementById('goalHistoryList');
-  if (!hist.length) {
-    container.innerHTML='<div class="goal-empty">Aucun historique pour l\'instant</div>';
-  } else {
-    container.innerHTML = hist.map(k=>{
-      const [y,m] = k.split('-');
-      const lbl = new Date(+y,+m-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-      const {total,count} = byMonth[k];
-      const hit = monthlyGoal>0 && total>=monthlyGoal;
-      const badge = monthlyGoal>0 ? `<div class="goal-history-badge ${hit?'hit':'miss'}">${hit?'✓ Atteint':'✗ Manqué'}</div>` : '';
-      return `<div class="goal-history-row"><div><div class="goal-history-month">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</div><div class="goal-history-sub">${count} vente${count>1?'s':''}</div></div><div class="goal-history-right"><div class="goal-history-ca">${total} €</div>${badge}</div></div>`;
-    }).join('');
+  buildGoalHistory(monthStr, byMonth);
+}
+
+function buildGoalChart(currentMonthStr) {
+  const now = new Date();
+  const months = [];
+  for (let i=5;i>=0;i--) {
+    const d = new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key = d.toISOString().slice(0,7);
+    const label = d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','');
+    const ca = sales.filter(s=>s.date.startsWith(key)).reduce((a,s)=>a+s.price,0);
+    months.push({key,label,ca,isCurrent:key===currentMonthStr});
   }
+  const maxCA = Math.max(...months.map(m=>m.ca),1);
+  const totalCA6 = months.reduce((a,m)=>a+m.ca,0);
+  document.getElementById('goalChartTotal').textContent = totalCA6>0 ? totalCA6+' € sur 6 mois' : '';
+  document.getElementById('goalChartBars').innerHTML = months.map(m=>{
+    const h = Math.max(Math.round(m.ca/maxCA*100),5);
+    const hit = monthlyGoal>0&&m.ca>=monthlyGoal;
+    const bg = m.isCurrent?'var(--red)':(hit?'rgba(74,222,128,.4)':'var(--s3)');
+    const glow = m.isCurrent?'filter:drop-shadow(0 0 6px rgba(254,44,85,.5));':'';
+    return `<div class="goal-chart-col">
+      <div style="font-size:9px;font-weight:600;color:${m.isCurrent?'var(--red)':(m.ca>0?'var(--t3)':'transparent')};margin-bottom:3px">${m.ca>0?m.ca+'€':''}</div>
+      <div class="goal-chart-bar" style="height:${h}%;background:${bg};${glow}width:100%"></div>
+      <div class="goal-chart-lbl" style="${m.isCurrent?'color:var(--red);font-weight:700':''}">${m.label}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildGoalHistory(currentMonthStr, byMonth) {
+  const keys = Object.keys(byMonth).sort().reverse().filter(k=>k!==currentMonthStr);
+  const container = document.getElementById('goalHistoryList');
+  if (!keys.length) { container.innerHTML='<div class="goal-empty">Aucun historique pour l\'instant</div>'; return; }
+  const maxCA = Math.max(...Object.values(byMonth).map(m=>m.total),1);
+  container.innerHTML = keys.map(k=>{
+    const [y,m]=k.split('-');
+    const lbl = new Date(+y,+m-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    const {total,count}=byMonth[k];
+    const hit=monthlyGoal>0&&total>=monthlyGoal;
+    const barPct=Math.round(total/maxCA*100);
+    const barColor=hit?'var(--green)':'var(--red)';
+    const badge=monthlyGoal>0?`<div class="goal-history-badge ${hit?'hit':'miss'}">${hit?'✓ Atteint':'✗ Manqué'}</div>`:'';
+    return `<div class="goal-history-row">
+      <div class="goal-history-left">
+        <div class="goal-history-month">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</div>
+        <div class="goal-history-sub">${count} vente${count>1?'s':''}</div>
+        <div class="goal-history-minibar"><div class="goal-history-minibar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+      </div>
+      <div class="goal-history-right"><div class="goal-history-ca">${total} €</div>${badge}</div>
+    </div>`;
+  }).join('');
+}
+
+function computeStreak(byMonth) {
+  if (!monthlyGoal||!sales.length) return 0;
+  const now=new Date(); let streak=0;
+  for (let i=1;i<=24;i++) {
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const k=d.toISOString().slice(0,7);
+    if ((byMonth[k]?.total||0)>=monthlyGoal) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function buildTip(ca, nb, avg, bestMonth, streak, dayOfMonth) {
+  if (!sales.length) return '';
+  if (streak>=3) return `<strong>🔥 Série de ${streak} mois !</strong> Tu maintiens ton objectif depuis ${streak} mois consécutifs. Continue comme ça !`;
+  if (nb>0&&avg>0) {
+    const neededSales = monthlyGoal>0&&ca<monthlyGoal ? Math.ceil((monthlyGoal-ca)/avg) : 0;
+    if (neededSales>0&&dayOfMonth<=25) return `<strong>💡 Conseil :</strong> À ton prix moyen de ${avg} €, il te faut encore <strong>${neededSales} vente${neededSales>1?'s':''}</strong> pour atteindre ton objectif.`;
+  }
+  if (bestMonth>0&&ca>=bestMonth) return `<strong>🏆 Record !</strong> Ce mois est ton meilleur mois à date avec <strong>${ca} €</strong>.`;
+  if (nb===0&&dayOfMonth>7) return `<strong>💡 Astuce :</strong> Tu n'as pas encore vendu ce mois. Pense à baisser légèrement tes prix pour booster tes ventes.`;
+  return '';
 }
 
 function openGoalEdit() {
-  if (monthlyGoal>0) document.getElementById('goalInput').value = monthlyGoal;
+  if (monthlyGoal>0) document.getElementById('goalInput').value=monthlyGoal;
+  if (salesGoal>0) document.getElementById('salesGoalInput').value=salesGoal;
   document.getElementById('goalEditOverlay').style.display='flex';
 }
 
 function saveGoalFromInput() {
-  const val = parseInt(document.getElementById('goalInput').value);
-  if (!val||val<=0) { showToast('Entre un montant valide'); return; }
-  monthlyGoal = val;
-  localStorage.setItem('lq_goal', monthlyGoal);
+  const ca=parseInt(document.getElementById('goalInput').value)||0;
+  const sv=parseInt(document.getElementById('salesGoalInput').value)||0;
+  if (!ca&&!sv) { showToast('Entre au moins un objectif'); return; }
+  monthlyGoal=ca; salesGoal=sv;
+  localStorage.setItem('lq_goal',monthlyGoal);
+  localStorage.setItem('lq_sales_goal',salesGoal);
   document.getElementById('goalEditOverlay').style.display='none';
   updateGoalsPage();
-  showToast('Objectif fixé à '+monthlyGoal+' € 🎯');
+  showToast('Objectifs enregistrés 🎯');
 }
 
 function showToast(msg) {
