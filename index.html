@@ -371,28 +371,16 @@ input[type=file]{display:none;}
 #conversation .nav { flex-shrink:0; }
 
 /* GOALS */
-.goal-month-hdr{text-align:center;font-size:13px;font-weight:600;color:var(--t2);padding:2px 0 10px;}
-.goal-ring-wrap{position:relative;width:172px;height:172px;margin:0 auto 6px;}
-.goal-ring{width:100%;height:100%;transform:rotate(-90deg);}
-.goal-ring-bg{fill:none;stroke:var(--s2);stroke-width:13;}
-.goal-ring-fill{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);}
-.goal-ring-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.goal-ring-pct{font-size:40px;font-weight:800;letter-spacing:-2px;}
-.goal-ring-tag{font-size:11px;color:var(--t2);margin-top:2px;font-weight:500;}
-.goal-hero-sub{text-align:center;font-size:13px;color:var(--t2);margin-bottom:14px;padding:0 28px;line-height:1.5;}
-.goal-prog-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px;margin:0 16px 10px;cursor:pointer;transition:border-color .15s;}
-.goal-prog-card:active{border-color:var(--b2);}
-.goal-prog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.goal-prog-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.goal-prog-title{font-size:13px;font-weight:700;margin-bottom:2px;}
-.goal-prog-sub{font-size:11px;color:var(--t2);}
-.goal-prog-pct{font-size:20px;font-weight:800;color:var(--red);flex-shrink:0;}
-.goal-prog-bar-bg{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
-.goal-prog-bar-fill{height:100%;background:var(--red);border-radius:3px;transition:width .6s ease;}
-.goal-prog-card.done .goal-prog-pct{color:var(--green);}
-.goal-prog-card.done .goal-prog-bar-fill{background:var(--green);}
-.goal-prog-card.done{border-color:rgba(74,222,128,.2);}
-.goal-prog-card.no-goal .goal-prog-pct{font-size:14px;color:var(--t3);font-weight:600;}
+.goal-hero{text-align:center;padding:32px 24px 22px;}
+.goal-hero-month{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:18px;}
+.goal-hero-ca{font-size:56px;font-weight:800;letter-spacing:-2.5px;line-height:1;}
+.goal-hero-label{font-size:13px;color:var(--t2);margin-top:6px;margin-bottom:22px;}
+.goal-hero-bar-wrap{margin:0 8px 18px;}
+.goal-hero-bar-bg{height:7px;background:var(--s2);border-radius:4px;overflow:hidden;margin-bottom:7px;}
+.goal-hero-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.goal-hero-bar-lbl{font-size:12px;color:var(--t2);}
+.goal-status-tag{display:inline-flex;align-items:center;padding:9px 20px;border-radius:24px;font-size:14px;font-weight:700;margin-bottom:16px;border:1px solid transparent;}
+.goal-hero-edit-btn{background:none;border:1px solid var(--b2);border-radius:10px;padding:9px 18px;font-size:13px;color:var(--t2);cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;}
 .goal-chart-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px 14px 10px;margin:0 16px 14px;}
 .goal-chart-lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .goal-chart-title{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;}
@@ -401,16 +389,6 @@ input[type=file]{display:none;}
 .goal-chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
 .goal-chart-bar{width:100%;border-radius:5px 5px 0 0;min-height:4px;}
 .goal-chart-lbl{font-size:9px;color:var(--t3);white-space:nowrap;}
-/* Stats rapides & statut */
-.goal-quick-row{text-align:center;font-size:13px;color:var(--t2);margin:-4px 0 14px;letter-spacing:.3px;}
-.goal-quick-row span{color:var(--t1);font-weight:600;}
-.goal-status-pill{display:flex;align-items:center;gap:8px;margin:0 16px 12px;padding:11px 14px;background:var(--s1);border:1px solid var(--b);border-radius:12px;font-size:13px;font-weight:600;}
-.goal-status-proj{margin-left:auto;font-size:12px;font-weight:400;color:var(--t2);}
-/* Carte progression unifiée */
-.goal-prog-unified{margin:0 16px 14px;background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:16px;cursor:pointer;}
-.goal-pu-row{display:flex;align-items:center;justify-content:space-between;}
-.goal-pu-lbl{font-size:13px;color:var(--t2);}
-.goal-pu-val{font-size:13px;font-weight:700;color:var(--red);}
 .goal-empty{text-align:center;padding:28px 16px;color:var(--t2);font-size:13px;}
 .goal-edit-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}
 .goal-edit-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);max-height:88%;overflow-y:auto;}
@@ -707,57 +685,30 @@ input[type=file]{display:none;}
     </div>
   </div>
   <div class="scroll">
-    <div class="goal-month-hdr" id="goalMonthHdr">Juin 2026</div>
 
-    <!-- Anneau -->
-    <div class="goal-ring-wrap">
-      <svg class="goal-ring" viewBox="0 0 120 120">
-        <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff7070"/><stop offset="100%" stop-color="#fe2c55"/></linearGradient></defs>
-        <circle class="goal-ring-bg" cx="60" cy="60" r="45"/>
-        <circle class="goal-ring-fill" id="goalRingFill" cx="60" cy="60" r="45" stroke="url(#ringGrad)"/>
-      </svg>
-      <div class="goal-ring-content">
-        <div class="goal-ring-pct" id="goalPct">--</div>
-        <div class="goal-ring-tag">atteint</div>
+    <!-- Hero : grand chiffre CA -->
+    <div class="goal-hero">
+      <div class="goal-hero-month" id="goalMonthHdr">Juin 2026</div>
+      <div class="goal-hero-ca" id="goalHeroCA">0 €</div>
+      <div class="goal-hero-label">gagné ce mois-ci</div>
+      <div class="goal-hero-bar-wrap" id="goalHeroBarWrap" style="display:none">
+        <div class="goal-hero-bar-bg"><div class="goal-hero-bar-fill" id="goalHeroBarFill" style="width:0%"></div></div>
+        <div class="goal-hero-bar-lbl" id="goalHeroBarLbl"></div>
       </div>
-    </div>
-    <div class="goal-hero-sub" id="goalHeroSub">Configure ton objectif mensuel ✏️</div>
-
-    <!-- Stats rapides : ventes · prix moy · jour -->
-    <div class="goal-quick-row" id="goalQuickRow" style="display:none">
-      <span id="goalQSales">0</span> ventes&nbsp;·&nbsp;<span id="goalQAvg">--</span> moy.&nbsp;·&nbsp;<span id="goalQDay">J--</span>
-    </div>
-
-    <!-- Pill statut rythme -->
-    <div class="goal-status-pill" id="goalStatusPill" style="display:none">
-      <span id="goalStatusText"></span>
-      <span class="goal-status-proj" id="goalStatusProj"></span>
-    </div>
-
-    <!-- Carte progression unifiée (CA + Ventes) -->
-    <div class="goal-prog-unified" onclick="openGoalEdit()">
-      <div class="goal-pu-row">
-        <div class="goal-pu-lbl">💰 CA mensuel</div>
-        <div class="goal-pu-val" id="goalCASub">Définir →</div>
-      </div>
-      <div class="goal-prog-bar-bg" style="margin:8px 0 16px"><div class="goal-prog-bar-fill" id="goalCABarFill" style="width:0%"></div></div>
-      <div class="goal-pu-row">
-        <div class="goal-pu-lbl">🛍️ Ventes ce mois</div>
-        <div class="goal-pu-val" id="goalSalesSub" style="color:#60a5fa">Définir →</div>
-      </div>
-      <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalSalesBarFill" style="width:0%;background:#60a5fa"></div></div>
+      <div class="goal-status-tag" id="goalStatusTag" style="display:none"><span id="goalStatusTagTxt"></span></div>
+      <button class="goal-hero-edit-btn" id="goalHeroEditBtn" onclick="openGoalEdit()" style="display:none">Définir mon objectif →</button>
     </div>
 
     <!-- Bouton IA -->
-    <div style="padding:0 16px 12px">
+    <div style="padding:0 16px 14px">
       <button class="goal-ai-btn" id="goalAIBtn" onclick="analyzeWithAI()">
         <div class="ai-shimmer" id="goalAIShimmer" style="display:none"></div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        <span id="goalAIBtnTxt">🤖 Analyser mes ventes avec l'IA</span>
+        <span id="goalAIBtnTxt">🤖 Obtenir des conseils IA</span>
       </button>
     </div>
 
-    <!-- Carte résultat IA -->
+    <!-- Résultat IA -->
     <div class="goal-ai-card" id="goalAICard" style="display:none">
       <div class="goal-ai-card-header">
         <div style="display:flex;align-items:center;gap:8px">
@@ -1701,58 +1652,47 @@ function updateGoalsPage() {
   const monthSales = sales.filter(s=>s.date.startsWith(monthStr));
   const ca = monthSales.reduce((a,s)=>a+s.price,0);
   const nb = monthSales.length;
-  const avg = nb>0 ? Math.round(ca/nb) : 0;
   const daysInMonth = new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
   const day = now.getDate();
 
+  // Mois
   const monthName = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
   document.getElementById('goalMonthHdr').textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1);
 
-  // Anneau
-  const caPct = monthlyGoal>0 ? Math.min(100,Math.round(ca/monthlyGoal*100)) : 0;
-  document.getElementById('goalRingFill').style.strokeDashoffset = 283*(1-caPct/100);
-  document.getElementById('goalPct').textContent = monthlyGoal>0 ? caPct+'%' : '--';
+  // Grand CA
+  document.getElementById('goalHeroCA').textContent = ca+' €';
 
-  // Sous le ring : montant ou invite
-  const sub=document.getElementById('goalHeroSub');
-  if (!monthlyGoal) { sub.textContent='Configure ton objectif mensuel ✏️'; sub.style.color='var(--t2)'; }
-  else if (ca>=monthlyGoal) { sub.textContent='🎉 '+ca+' € — objectif dépassé !'; sub.style.color='var(--green)'; }
-  else { sub.textContent=ca+' € / '+monthlyGoal+' €'; sub.style.color='var(--t2)'; }
+  // Barre de progression + statut
+  const barWrap = document.getElementById('goalHeroBarWrap');
+  const editBtn = document.getElementById('goalHeroEditBtn');
+  const tag = document.getElementById('goalStatusTag');
 
-  // Ligne stats rapides
-  const qRow=document.getElementById('goalQuickRow');
-  if (nb>0||monthlyGoal>0) {
-    qRow.style.display='block';
-    document.getElementById('goalQSales').textContent=nb;
-    document.getElementById('goalQAvg').textContent=avg>0?avg+' €':'--';
-    document.getElementById('goalQDay').textContent='J'+day+'/'+daysInMonth;
-  } else { qRow.style.display='none'; }
+  if (monthlyGoal > 0) {
+    barWrap.style.display = 'block';
+    editBtn.style.display = 'none';
+    const pct = Math.min(100, Math.round(ca/monthlyGoal*100));
+    const done = ca >= monthlyGoal;
+    const barColor = done ? 'var(--green)' : 'var(--red)';
+    document.getElementById('goalHeroBarFill').style.width = pct+'%';
+    document.getElementById('goalHeroBarFill').style.background = barColor;
+    document.getElementById('goalHeroBarLbl').textContent = ca+' / '+monthlyGoal+' € · '+nb+' vente'+(nb!==1?'s':'');
 
-  // Pill statut rythme
-  const pill=document.getElementById('goalStatusPill');
-  if (monthlyGoal && nb>0) {
-    const projected = day>0 ? Math.round(ca/day*daysInMonth) : 0;
-    let emoji,label,color;
-    if (ca>=monthlyGoal) { emoji='🎉'; label='Objectif atteint !'; color='var(--green)'; }
-    else if (projected>=monthlyGoal) { emoji='🚀'; label='En avance'; color='var(--green)'; }
-    else if (projected>=monthlyGoal*.8) { emoji='👍'; label='Dans les temps'; color='var(--amber)'; }
-    else { emoji='⚠️'; label='Prends du rythme'; color='var(--red)'; }
-    pill.style.display='flex';
-    pill.style.borderColor=color+'44';
-    document.getElementById('goalStatusText').textContent=emoji+' '+label;
-    document.getElementById('goalStatusText').style.color=color;
-    document.getElementById('goalStatusProj').textContent=ca<monthlyGoal?'Projection : '+projected+' €':'';
-  } else { pill.style.display='none'; }
-
-  // Carte progression unifiée
-  const caSub=document.getElementById('goalCASub'), caBar=document.getElementById('goalCABarFill');
-  if (!monthlyGoal) { caSub.textContent='Définir →'; caSub.style.color='var(--t2)'; caBar.style.width='0%'; }
-  else { caSub.textContent=ca+' / '+monthlyGoal+' €'; caSub.style.color=ca>=monthlyGoal?'var(--green)':'var(--red)'; caBar.style.width=caPct+'%'; }
-
-  const sSub=document.getElementById('goalSalesSub'), sBar=document.getElementById('goalSalesBarFill');
-  const sPct=salesGoal>0?Math.min(100,Math.round(nb/salesGoal*100)):0;
-  if (!salesGoal) { sSub.textContent='Définir →'; sSub.style.color='var(--t2)'; sBar.style.width='0%'; }
-  else { sSub.textContent=nb+' / '+salesGoal; sSub.style.color=nb>=salesGoal?'var(--green)':'#60a5fa'; sBar.style.width=sPct+'%'; }
+    if (nb > 0) {
+      const projected = day>0 ? Math.round(ca/day*daysInMonth) : 0;
+      let txt, bg, color;
+      if (done)                        { txt='🎉 Objectif atteint !';    bg='rgba(74,222,128,.12)';  color='var(--green)'; }
+      else if (projected>=monthlyGoal) { txt='🚀 Tu es en avance';       bg='rgba(74,222,128,.08)';  color='var(--green)'; }
+      else if (projected>=monthlyGoal*.8){ txt='👍 Dans les temps';      bg='rgba(251,191,36,.1)';   color='var(--amber)'; }
+      else                             { txt='⚠️ Accélère le rythme';    bg='rgba(254,44,85,.1)';    color='var(--red)'; }
+      tag.style.cssText = `display:inline-flex;background:${bg};border-color:${color}44;`;
+      document.getElementById('goalStatusTagTxt').textContent = txt;
+      document.getElementById('goalStatusTagTxt').style.color = color;
+    } else { tag.style.display = 'none'; }
+  } else {
+    barWrap.style.display = 'none';
+    tag.style.display = 'none';
+    editBtn.style.display = 'inline-block';
+  }
 
   // Graphique
   buildGoalChart(monthStr);
