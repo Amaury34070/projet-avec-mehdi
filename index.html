@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Listiq">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -954,6 +955,66 @@ const QR = {
   initial:["Bonjour ! Oui encore dispo 😊","Vous pouvez faire une offre","Envoi rapide possible !","Disponible en main propre"]
 };
 
+// ─── SUPABASE ────────────────────────────────────────
+const SB_URL = 'https://jzkvqvbyeteievdrcbjq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6a3ZxdmJ5ZXRlaWV2ZHJjYmpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MjIxOTcsImV4cCI6MjA5NjI5ODE5N30.-nFsCUkYh5XjOVSf07jxbo3J0T03w-BG6_Stu3ldivA';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+async function syncToSupabase() {
+  try {
+    if (userListings.length > 0) {
+      await sb.from('listings').upsert(userListings.map(l => ({
+        id: l.id, name: l.name, brand: l.brand||null, price: l.price,
+        status: l.status||'active', platform: l.platform||null,
+        description: l.description||null, images: l.images||[]
+      })));
+    }
+    const realSales = sales.filter(s => s.id > 10000);
+    if (realSales.length > 0) {
+      await sb.from('sales').upsert(realSales.map(s => ({
+        id: s.id, listing_id: s.listingId||null, name: s.name,
+        brand: s.brand||null, price: s.price, date: s.date
+      })));
+    }
+    await sb.from('goals').upsert({id:1, monthly_goal:monthlyGoal, sales_goal:salesGoal});
+  } catch(e) { console.warn('[Supabase] sync:', e.message); }
+}
+
+async function loadFromSupabase() {
+  try {
+    const [ldRes, slRes, gRes] = await Promise.all([
+      sb.from('listings').select('*').order('created_at',{ascending:false}),
+      sb.from('sales').select('*').order('date',{ascending:false}),
+      sb.from('goals').select('*').eq('id',1).single()
+    ]);
+    let changed = false;
+    if (!ldRes.error && ldRes.data) {
+      userListings = ldRes.data.map(l => ({
+        id:l.id, name:l.name, brand:l.brand, price:l.price,
+        status:l.status, platform:l.platform, description:l.description, images:l.images||[]
+      }));
+      localStorage.setItem('lq_listings', JSON.stringify(userListings));
+      changed = true;
+    }
+    if (!slRes.error && slRes.data && slRes.data.length > 0) {
+      sales = slRes.data.map(s => ({
+        id:s.id, listingId:s.listing_id, name:s.name,
+        brand:s.brand, price:s.price, date:s.date
+      }));
+      localStorage.setItem('lq_sales', JSON.stringify(sales));
+      changed = true;
+    }
+    if (!gRes.error && gRes.data) {
+      monthlyGoal = gRes.data.monthly_goal||0;
+      salesGoal = gRes.data.sales_goal||0;
+      localStorage.setItem('lq_goal', monthlyGoal);
+      localStorage.setItem('lq_sales_goal', salesGoal);
+      changed = true;
+    }
+    if (changed) { buildCards(); updateStats(); }
+  } catch(e) { console.warn('[Supabase] load:', e.message); }
+}
+
 // ─── STATE ──────────────────────────────────────────
 let images = [], articleCount = 0, currentConvId = null, currentFilter = 'all', detailOrigin = 'home';
 let userListings = [];
@@ -979,6 +1040,7 @@ function saveUserData() {
     localStorage.setItem('lq_convs', JSON.stringify(convData));
     localStorage.setItem('lq_count', articleCount);
   } catch(e) { showToast('Erreur de sauvegarde'); }
+  syncToSupabase();
 }
 
 function loadSavedData() {
@@ -1017,6 +1079,7 @@ function loadSavedData() {
   } catch(e) {}
   updateApiKeyStatus();
   updateStats();
+  loadFromSupabase();
 }
 
 // ─── GESTION ANNONCES ────────────────────────────────
@@ -1958,6 +2021,7 @@ function saveGoalFromInput() {
   monthlyGoal=ca; salesGoal=sv;
   localStorage.setItem('lq_goal',monthlyGoal);
   localStorage.setItem('lq_sales_goal',salesGoal);
+  sb.from('goals').upsert({id:1, monthly_goal:monthlyGoal, sales_goal:salesGoal}).then();
   document.getElementById('goalEditOverlay').style.display='none';
   updateGoalsPage();
   showToast('Objectifs enregistrés 🎯');
