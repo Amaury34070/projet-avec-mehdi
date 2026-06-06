@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Listiq">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -43,12 +44,9 @@ input[type=file]{display:none;}
 .ni.on{opacity:1;}
 .ni svg{width:24px;height:24px;}
 .ni span{font-size:10px;font-weight:500;}
-.ni-plus{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
-.plus-wrap{position:relative;width:48px;height:32px;}
-.plus-r{position:absolute;inset:0;background:var(--red);border-radius:10px;transform:translateX(3px);}
-.plus-c{position:absolute;inset:0;background:var(--cyan);border-radius:10px;transform:translateX(-3px);}
-.plus-w{position:absolute;inset:0;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:300;color:#000;transition:transform .12s;}
-.ni-plus:active .plus-w{transform:scale(.92);}
+.ni-plus{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;margin-top:-14px;}
+.plus-wrap{width:52px;height:52px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(254,44,85,.5);transition:transform .12s;}
+.ni-plus:active .plus-wrap{transform:scale(.91);}
 .ni-plus span{font-size:10px;font-weight:500;color:var(--t2);}
 
 /* TOPBAR */
@@ -59,9 +57,24 @@ input[type=file]{display:none;}
 
 /* STATS */
 .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 16px 14px;}
-.stat-box{background:var(--s1);border-radius:14px;border:1px solid var(--b);padding:12px 13px;}
+.stat-box{background:var(--s1);border-radius:14px;border:1px solid var(--b);padding:12px 13px;cursor:pointer;transition:border-color .15s;}
+.stat-box:active{border-color:var(--b2);}
 .stat-val{font-size:20px;font-weight:700;letter-spacing:-.5px;}
-.stat-lbl{font-size:11px;color:var(--t2);margin-top:2px;}
+.stat-lbl{font-size:10px;color:var(--t2);margin-top:2px;line-height:1.3;}
+.stat-unit{font-size:11px;font-weight:600;color:var(--t3);}
+.sales-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
+.sales-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;max-height:75%;display:flex;flex-direction:column;border-top:1px solid var(--b2);}
+.sales-sheet-head{padding:16px 16px 12px;border-bottom:1px solid var(--b);flex-shrink:0;}
+.sales-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 14px;}
+.sales-sheet-title{font-size:15px;font-weight:700;}
+.sales-sheet-sub{font-size:12px;color:var(--t2);margin-top:2px;}
+.sales-list{overflow-y:auto;flex:1;padding:8px 12px 32px;}
+.sale-row{display:flex;align-items:center;justify-content:space-between;padding:11px 2px;border-bottom:1px solid var(--b);}
+.sale-row:last-child{border-bottom:none;}
+.sale-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.sale-date{font-size:11px;color:var(--t2);}
+.sale-price{font-size:15px;font-weight:700;color:var(--green);}
+.sales-empty{text-align:center;padding:40px 16px;color:var(--t2);font-size:13px;}
 .stat-box.hi{background:rgba(254,44,85,.08);border-color:rgba(254,44,85,.2);}
 .stat-box.hi .stat-val{color:var(--red);}
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:2px 16px 10px;}
@@ -82,9 +95,9 @@ input[type=file]{display:none;}
 .lcard-plat img{width:100%;height:100%;object-fit:cover;display:block;}
 .lcard-body{padding:10px 11px 12px;}
 .lcard-brand{font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-.lcard-name{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:5px;}
+.lcard-name{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:5px;white-space:nowrap;overflow:hidden;}
 .lcard-price{font-size:17px;font-weight:700;letter-spacing:-.5px;}
-.lcard-size{font-size:11px;color:var(--t2);margin-left:5px;}
+.lcard-size{font-size:11px;font-weight:600;color:var(--t2);background:var(--s2);border:1px solid var(--b);border-radius:5px;padding:2px 6px;}
 .lcard-stats{display:flex;gap:8px;margin-top:6px;padding-top:7px;border-top:1px solid var(--b);}
 .lcard-stat{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--t2);}
 .lcard-stat svg{width:12px;height:12px;flex-shrink:0;}
@@ -337,6 +350,16 @@ input[type=file]{display:none;}
 .pub-plat-hint{font-size:11px;color:var(--t2);margin-top:1px;}
 .pub-plat-arrow{color:var(--t3);}
 .pub-done-btn{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;}
+.home-tab{font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer;color:var(--t2);background:transparent;transition:all .15s;}
+.home-tab.on{background:var(--s2);color:var(--t);border:1px solid var(--b2);}
+.home-tab span{margin-left:8px;font-size:10px;font-weight:700;color:var(--red);background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.25);border-radius:5px;padding:1px 5px;display:inline-flex;align-items:center;vertical-align:middle;}
+.del-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;}
+.del-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);}
+.del-sheet-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
+.del-sheet-name{font-size:14px;font-weight:600;text-align:center;margin-bottom:6px;}
+.del-sheet-sub{font-size:12px;color:var(--t2);text-align:center;margin-bottom:20px;}
+.del-btn-danger{width:100%;background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.3);border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:var(--red);cursor:pointer;margin-bottom:8px;font-family:'Inter',sans-serif;}
+.del-btn-cancel{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;font-family:'Inter',sans-serif;}
 
 /* conversation screen layout */
 #conversation { display:flex; flex-direction:column; }
@@ -348,6 +371,117 @@ input[type=file]{display:none;}
 #conversation .reply-bar { flex-shrink:0; }
 #conversation .nav { flex-shrink:0; }
 
+/* GOALS */
+.goal-hero{text-align:center;padding:32px 24px 22px;}
+.goal-hero-month{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:18px;}
+.goal-hero-ca{font-size:56px;font-weight:800;letter-spacing:-2.5px;line-height:1;}
+.goal-hero-label{font-size:13px;color:var(--t2);margin-top:6px;margin-bottom:22px;}
+.goal-hero-bar-wrap{margin:0 8px 18px;}
+.goal-hero-bar-bg{height:7px;background:var(--s2);border-radius:4px;overflow:hidden;margin-bottom:7px;}
+.goal-hero-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.goal-hero-bar-lbl{font-size:12px;color:var(--t2);}
+.goal-status-tag{display:inline-flex;align-items:center;padding:9px 20px;border-radius:24px;font-size:14px;font-weight:700;margin-bottom:16px;border:1px solid transparent;}
+.goal-hero-edit-btn{background:none;border:1px solid var(--b2);border-radius:10px;padding:9px 18px;font-size:13px;color:var(--t2);cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;}
+/* Barres progression */
+.goal-prog-wrap{margin:0 16px 14px;background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:16px;}
+.goal-prog-sep{height:1px;background:var(--b);margin:14px 0;}
+.goal-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.goal-prog-lbl{font-size:13px;color:var(--t2);}
+.goal-prog-val{font-size:13px;font-weight:700;color:var(--red);}
+.goal-prog-val-blue{color:#60a5fa!important;}
+.goal-prog-bar-bg{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.goal-prog-bar-fill{height:100%;background:var(--red);border-radius:3px;transition:width .5s ease;}
+.goal-prog-bar-blue{background:#60a5fa!important;}
+.goal-prog-edit-btn{background:none;border:none;font-size:11px;color:var(--t3);font-family:'Inter',sans-serif;cursor:pointer;}
+/* Historique */
+.hist-period-wrap{display:flex;gap:7px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;}
+.hist-period-wrap::-webkit-scrollbar{display:none;}
+.hist-period-btn{flex-shrink:0;background:var(--s1);border:1px solid var(--b);border-radius:20px;padding:7px 15px;font-size:12px;font-weight:600;color:var(--t2);font-family:'Inter',sans-serif;cursor:pointer;transition:all .12s;}
+.hist-period-btn.active{background:var(--red);border-color:var(--red);color:#fff;}
+.hist-summary{padding:0 16px 8px;font-size:12px;color:var(--t2);}
+.hist-summary strong{color:var(--t);font-weight:700;}
+.hist-row{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--b);cursor:pointer;transition:background .1s;}
+.hist-row:last-child{border-bottom:none;}
+.hist-row:active{background:var(--s2);}
+.hist-row-left{flex:1;min-width:0;}
+.hist-row-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-row-date{font-size:11px;color:var(--t2);margin-top:2px;}
+.hist-row-price{font-size:15px;font-weight:800;color:var(--green);flex-shrink:0;margin-left:12px;}
+/* Détail vente */
+.sale-detail-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:flex-end;}
+.sale-detail-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 24px 48px;border-top:1px solid var(--b2);}
+.sale-detail-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 22px;}
+.sale-detail-price{font-size:42px;font-weight:800;letter-spacing:-2px;color:var(--green);margin-bottom:10px;}
+.sale-detail-name{font-size:18px;font-weight:700;margin-bottom:6px;}
+.sale-detail-brand{font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;}
+.sale-detail-date{font-size:13px;color:var(--t2);line-height:1.5;}
+.goal-chart-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:14px 14px 10px;margin:0 16px 14px;}
+.goal-chart-lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.goal-chart-title{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;}
+.goal-chart-total{font-size:12px;font-weight:700;color:var(--t);}
+.goal-chart-bars{display:flex;align-items:flex-end;gap:5px;height:72px;}
+.goal-chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.goal-chart-bar{width:100%;border-radius:5px 5px 0 0;min-height:4px;}
+.goal-chart-lbl{font-size:9px;color:var(--t3);white-space:nowrap;}
+.goal-empty{text-align:center;padding:28px 16px;color:var(--t2);font-size:13px;}
+.goal-edit-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}
+.goal-edit-sheet{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px 36px;border-top:1px solid var(--b2);max-height:88%;overflow-y:auto;}
+.goal-edit-handle{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 16px;}
+.goal-edit-title{font-size:16px;font-weight:700;text-align:center;margin-bottom:4px;}
+.goal-edit-sub{font-size:12px;color:var(--t2);text-align:center;margin-bottom:18px;}
+.goal-edit-section{margin-bottom:20px;}
+.goal-edit-section-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.goal-input-wrap{background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.goal-input-unit{font-size:20px;font-weight:700;color:var(--t3);}
+.goal-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:20px;font-weight:700;color:var(--t);}
+.goal-presets{display:flex;gap:7px;}
+.goal-preset{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:8px 4px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;}
+.goal-preset:active{background:var(--s3);}
+.goal-save-btn{width:100%;background:var(--red);border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+/* AI Coach */
+.goal-ai-btn{width:100%;padding:14px 18px;background:linear-gradient(135deg,#1a0830,#2d0a1e);border:1px solid rgba(254,44,85,.35);border-radius:14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .15s;position:relative;overflow:hidden;}
+.goal-ai-btn:not(:disabled):active{transform:scale(.98);}
+.goal-ai-btn:disabled{opacity:.55;cursor:not-allowed;}
+.goal-ai-card{background:linear-gradient(135deg,rgba(26,8,48,.95),rgba(45,10,30,.95));border:1px solid rgba(254,44,85,.25);border-radius:16px;padding:14px;margin:0 16px 14px;}
+.goal-ai-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.goal-ai-card-title{font-size:13px;font-weight:700;}
+.goal-ai-card-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.goal-ai-score{background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.25);border-radius:8px;padding:4px 10px;font-size:14px;font-weight:800;color:var(--red);}
+.goal-ai-pronostic{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.55;margin-bottom:11px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;font-style:italic;}
+.goal-ai-conseil-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px;}
+.goal-ai-conseil-row:last-child{margin-bottom:0;}
+.goal-ai-conseil-num{width:21px;height:21px;background:rgba(254,44,85,.12);border:1px solid rgba(254,44,85,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--red);flex-shrink:0;margin-top:2px;}
+.goal-ai-conseil-txt{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.5;}
+/* Badges */
+.goal-badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 14px;}
+.goal-badge{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px 8px;text-align:center;}
+.goal-badge.unlocked{border-color:rgba(254,44,85,.2);background:rgba(254,44,85,.04);}
+.goal-badge-icon{font-size:26px;margin-bottom:5px;filter:grayscale(1);opacity:.22;}
+.goal-badge.unlocked .goal-badge-icon{filter:none;opacity:1;}
+.goal-badge-name{font-size:10px;font-weight:700;color:var(--t3);}
+.goal-badge.unlocked .goal-badge-name{color:var(--t);}
+.goal-badge-desc{font-size:9px;color:var(--t3);margin-top:2px;line-height:1.3;}
+.goal-badge.unlocked .goal-badge-desc{color:var(--t2);}
+
+
+/* ── AUTH ── */
+.auth-screen{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-card{width:100%;padding:32px 24px;background:var(--s1);border-radius:20px;border:1px solid var(--b2);}
+.auth-logo{font-size:28px;font-weight:700;color:var(--t);text-align:center;margin-bottom:24px;letter-spacing:-0.5px;}
+.auth-logo em{color:var(--cyan);font-style:normal;}
+.auth-tabs{display:flex;background:var(--s2);border-radius:12px;padding:4px;margin-bottom:20px;}
+.auth-tab{flex:1;text-align:center;padding:10px;border-radius:9px;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.2s;}
+.auth-tab.on{background:var(--s3);color:var(--t);}
+.auth-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:14px 16px;font-size:15px;color:var(--t);outline:none;margin-bottom:12px;font-family:inherit;}
+.auth-input:focus{border-color:var(--cyan);}
+.auth-input::placeholder{color:var(--t3);}
+.auth-error{font-size:13px;color:var(--red);text-align:center;min-height:18px;margin-bottom:8px;}
+.auth-btn{width:100%;padding:15px;background:var(--cyan);border:none;border-radius:12px;font-size:15px;font-weight:700;color:#000;cursor:pointer;transition:opacity 0.2s;font-family:inherit;}
+.auth-btn:active{opacity:0.8;}
+.auth-btn:disabled{opacity:0.5;cursor:default;}
+.auth-switch{text-align:center;margin-top:16px;font-size:13px;color:var(--t2);}
+.auth-switch-link{color:var(--cyan);font-weight:600;cursor:pointer;margin-left:4px;}
+.logout-btn{width:100%;padding:14px;background:transparent;border:1px solid var(--red);border-radius:12px;font-size:15px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -356,7 +490,7 @@ input[type=file]{display:none;}
 <div class="island"></div>
 
 <!-- ══════ HOME ══════ -->
-<div class="screen active" id="home">
+<div class="screen" id="home">
   <div class="status"><span>14:22</span></div>
   <div class="topbar">
     <div class="logo">list<em>iq</em></div>
@@ -369,15 +503,20 @@ input[type=file]{display:none;}
   </div>
   <div class="scroll">
     <div class="stats-strip">
-      <div class="stat-box"><div class="stat-val" id="homeToday">0</div><div class="stat-lbl">Aujourd'hui</div></div>
-      <div class="stat-box"><div class="stat-val">847</div><div class="stat-lbl">Ce mois</div></div>
-      <div class="stat-box hi"><div class="stat-val">12,3k€</div><div class="stat-lbl">CA estimé</div></div>
+      <div class="stat-box" onclick="openSalesSheet('today')"><div class="stat-val" id="homeToday">0</div><div class="stat-lbl">Ventes<br>aujourd'hui</div></div>
+      <div class="stat-box" onclick="openSalesSheet('month')"><div class="stat-val" id="homeMonth">0</div><div class="stat-lbl">Ventes<br>ce mois</div></div>
+      <div class="stat-box hi" onclick="openSalesSheet('all')"><div class="stat-val" id="homeCA">0 €</div><div class="stat-lbl">CA total<br>estimé</div></div>
     </div>
-    <div class="sec-hdr"><div class="sec-title">Annonces en ligne</div><div class="sec-link">Voir tout</div></div>
+    <div class="sec-hdr">
+      <div style="display:flex;gap:6px">
+        <div class="home-tab on" id="tabActives" onclick="switchHomeTab('actives',this)">Actives<span id="countActives"></span></div>
+        <div class="home-tab" id="tabArchives" onclick="switchHomeTab('archives',this)">Archivées<span id="countArchives"></span></div>
+      </div>
+    </div>
     <div class="cards-grid" id="cardsGrid"></div>
     <div style="height:8px"></div>
   </div>
-  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span style="color:white">Articles</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
 </div>
 
 <!-- ══════ DETAIL ══════ -->
@@ -387,7 +526,7 @@ input[type=file]{display:none;}
     <div class="detail-topbar">
       <div class="detail-back" onclick="detailGoBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
       <div style="font-size:15px;font-weight:700">Détail annonce</div>
-      <div class="detail-more"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+      <div class="detail-more" onclick="showDetailMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
     </div>
     <div class="detail-hero-info">
       <div class="detail-brand" id="dBrand"></div>
@@ -415,7 +554,7 @@ input[type=file]{display:none;}
       <div id="platStatsContainer"></div>
     </div>
   </div>
-  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span style="color:white">Articles</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
 </div>
 
 <!-- ══════ POST ══════ -->
@@ -448,7 +587,7 @@ input[type=file]{display:none;}
       <div class="lstep" id="ls4" style="opacity:.3"><div class="l-idle" id="li4"></div><span>Estimation prix marché</span></div>
     </div>
   </div>
-  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span style="color:white">Articles</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
 </div>
 
 <!-- ══════ RESULT ══════ -->
@@ -478,7 +617,8 @@ input[type=file]{display:none;}
         <div class="frow"><div class="fkey">Description</div><textarea class="fval" id="fDesc" rows="4" placeholder="—"></textarea></div>
       </div>
       <div class="fcard"><div class="fcard-title">Prix estimé</div>
-        <div class="price-3"><div><div class="plbl">Min</div><div class="pval" id="pMin">—</div></div><div><div class="plbl">Recommandé</div><div class="pval rec" id="pRec">—</div></div><div><div class="plbl">Max</div><div class="pval" id="pMax">—</div></div></div>
+        <div id="priceNewRow" style="display:none;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:8px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--t2)">Prix neuf boutique</span><span id="pNew" style="font-size:14px;font-weight:700;color:#60a5fa">—</span></div>
+        <div class="price-3"><div><div class="plbl">Min occasion</div><div class="pval" id="pMin">—</div></div><div><div class="plbl">Recommandé</div><div class="pval rec" id="pRec">—</div></div><div><div class="plbl">Max occasion</div><div class="pval" id="pMax">—</div></div></div>
         <div class="price-note" id="priceNote"></div>
         <div class="price-input-row"><span class="pilbl">Mon prix</span><div class="piwrap"><input type="number" class="piinput" id="fPrice" placeholder="0"></div><span style="font-size:15px;font-weight:600;color:var(--t2)">€</span></div>
       </div>
@@ -491,7 +631,7 @@ input[type=file]{display:none;}
       <button class="pub-btn" onclick="publish()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publier maintenant</button>
     </div>
   </div>
-  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span style="color:white">Articles</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+  <div class="nav"><div class="ni on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span style="color:white">Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
 </div>
 
 <!-- ══════ MESSAGES ══════ -->
@@ -505,7 +645,7 @@ input[type=file]{display:none;}
     <div class="filter-tab" onclick="filterConvs('Depop',this)"><img src="data:image/png;base64,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"><span>Depop</span></div>
   </div>
   <div class="scroll" id="convListContainer"></div>
-  <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni on" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="color:white">Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>Articles</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+  <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni on" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="color:white">Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
 </div>
 
 <!-- ══════ CONVERSATION ══════ -->
@@ -558,8 +698,8 @@ input[type=file]{display:none;}
   <div class="nav" style="position:relative;flex-shrink:0;">
       <div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div>
       <div class="ni on" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="white" stroke-width="0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="color:white">Messages</span></div>
-      <div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div>
-      <div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>Articles</span></div>
+      <div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div>
+      <div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div>
       <div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div>
     </div>
 </div>
@@ -570,7 +710,7 @@ input[type=file]{display:none;}
   <div class="status"><span>14:22</span></div>
   <div class="topbar"><div class="logo">list<em>iq</em></div></div>
   <div class="scroll">
-    <div class="profile-hero"><div class="profile-avatar">AM</div><div class="profile-name">Amaury</div><div class="profile-sub">Revendeur pro · Montpellier</div></div>
+    <div class="profile-hero"><div class="profile-avatar" id="profileAvatar">?</div><div class="profile-name" id="profileName">—</div><div class="profile-sub" id="profileSub">Mon compte</div></div>
     <div class="profile-stats"><div class="pstat"><div class="pstat-val">847</div><div class="pstat-lbl">Annonces</div></div><div class="pstat"><div class="pstat-val">98%</div><div class="pstat-lbl">Taux vente</div></div><div class="pstat"><div class="pstat-val">12,3k</div><div class="pstat-lbl">CA €</div></div></div>
     <div class="settings-section"><div class="settings-title">Plateformes connectées</div>
       <div class="setting-row"><div class="setting-icon"><img src="data:image/png;base64,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"></div><div class="setting-label">Vinted</div><span style="font-size:11px;font-weight:600;color:var(--green)">Connecté</span></div>
@@ -581,11 +721,193 @@ input[type=file]{display:none;}
     <div class="settings-section" style="margin-top:4px"><div class="settings-title">Intelligence Artificielle</div>
       <div class="setting-row" onclick="showApiModal()"><div class="setting-icon" style="background:#0d1a2e;border:1px solid rgba(96,165,250,.2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><div class="setting-label">Clé API Anthropic</div><span id="apikeyStatus" style="font-size:11px;font-weight:600;color:var(--t2)">Configurer</span></div>
     </div>
+    <div style="padding:16px 0 8px"><button class="logout-btn" onclick="logout()">Se déconnecter</button></div>
   </div>
-  <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><div class="plus-r"></div><div class="plus-c"></div><div class="plus-w">+</div></div><span>Poster</span></div><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>Articles</span></div><div class="ni on" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style="color:white">Profil</span></div></div>
+  <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.5)"/></svg><span>Objectifs</span></div><div class="ni on" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style="color:white">Profil</span></div></div>
+</div>
+
+<!-- ══════ AUTH SCREEN ══════ -->
+<div class="auth-screen" id="authScreen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-logo">list<em>iq</em></div>
+    <div class="auth-tabs">
+      <div class="auth-tab on" id="authTabLogin" onclick="switchAuthTab('login')">Connexion</div>
+      <div class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Inscription</div>
+    </div>
+    <input class="auth-input" id="authEmail" type="email" placeholder="Email" autocomplete="email">
+    <input class="auth-input" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <div class="auth-error" id="authError"></div>
+    <button class="auth-btn" id="authBtn" onclick="authAction()">Se connecter</button>
+    <div class="auth-switch">
+      <span id="authSwitchTxt">Pas encore de compte ?</span>
+      <span class="auth-switch-link" id="authSwitchLink" onclick="switchAuthTab('register')">S'inscrire</span>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<!-- ══════ GOALS ══════ -->
+<div class="screen" id="goals">
+  <div class="status"><span>14:22</span></div>
+  <div class="topbar">
+    <div class="logo">list<em>iq</em></div>
+    <div class="icon-btn" onclick="openGoalEdit()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </div>
+  </div>
+  <div class="scroll">
+
+    <!-- Hero : grand chiffre CA -->
+    <div class="goal-hero">
+      <div class="goal-hero-month" id="goalMonthHdr">Juin 2026</div>
+      <div class="goal-hero-ca" id="goalHeroCA">0 €</div>
+      <div class="goal-hero-label">gagné ce mois-ci</div>
+      <div class="goal-hero-bar-wrap" id="goalHeroBarWrap" style="display:none">
+        <div class="goal-hero-bar-bg"><div class="goal-hero-bar-fill" id="goalHeroBarFill" style="width:0%"></div></div>
+        <div class="goal-hero-bar-lbl" id="goalHeroBarLbl"></div>
+      </div>
+      <div class="goal-status-tag" id="goalStatusTag" style="display:none"><span id="goalStatusTagTxt"></span></div>
+      <button class="goal-hero-edit-btn" id="goalHeroEditBtn" onclick="openGoalEdit()" style="display:none">Définir mon objectif →</button>
+    </div>
+
+    <!-- Barres de progression CA + Ventes -->
+    <div class="goal-prog-wrap">
+      <div class="goal-prog-item">
+        <div class="goal-prog-row"><span class="goal-prog-lbl">💰 CA mensuel</span><span class="goal-prog-val" id="goalCASub">Objectif non défini</span></div>
+        <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" id="goalCABarFill" style="width:0%"></div></div>
+      </div>
+      <div class="goal-prog-sep"></div>
+      <div class="goal-prog-item">
+        <div class="goal-prog-row"><span class="goal-prog-lbl">🛍️ Ventes ce mois</span><span class="goal-prog-val goal-prog-val-blue" id="goalSalesSub">Objectif non défini</span></div>
+        <div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill goal-prog-bar-blue" id="goalSalesBarFill" style="width:0%"></div></div>
+      </div>
+      <div style="text-align:right;margin-top:12px"><button class="goal-prog-edit-btn" onclick="openGoalEdit()">Modifier l'objectif ✏️</button></div>
+    </div>
+
+    <!-- Bouton IA -->
+    <div style="padding:0 16px 14px">
+      <button class="goal-ai-btn" id="goalAIBtn" onclick="analyzeWithAI()">
+        <div class="ai-shimmer" id="goalAIShimmer" style="display:none"></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span id="goalAIBtnTxt">🤖 Obtenir des conseils IA</span>
+      </button>
+    </div>
+
+    <!-- Résultat IA -->
+    <div class="goal-ai-card" id="goalAICard" style="display:none">
+      <div class="goal-ai-card-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:20px">🤖</span>
+          <div><div class="goal-ai-card-title">Coach IA</div><div class="goal-ai-card-sub" id="goalAIStatut"></div></div>
+        </div>
+        <div class="goal-ai-score" id="goalAIScore"></div>
+      </div>
+      <div class="goal-ai-pronostic" id="goalAIPronostic"></div>
+      <div id="goalAIConseils"></div>
+    </div>
+
+    <!-- Graphique 6 mois -->
+    <div class="sec-hdr"><div class="sec-title">6 derniers mois</div></div>
+    <div class="goal-chart-card">
+      <div class="goal-chart-lbl-row"><div class="goal-chart-title">CA mensuel</div><div class="goal-chart-total" id="goalChartTotal"></div></div>
+      <div class="goal-chart-bars" id="goalChartBars"></div>
+    </div>
+
+    <!-- Badges -->
+    <div class="sec-hdr"><div class="sec-title">Badges</div><div class="sec-link" id="goalBadgeCount"></div></div>
+    <div class="goal-badges" id="goalBadges"></div>
+
+    <!-- Historique des ventes -->
+    <div class="sec-hdr" style="margin-top:8px"><div class="sec-title">Historique des ventes</div></div>
+    <div class="hist-period-wrap">
+      <button class="hist-period-btn" onclick="setHistFilter('day',this)">Aujourd'hui</button>
+      <button class="hist-period-btn" onclick="setHistFilter('week',this)">Semaine</button>
+      <button class="hist-period-btn active" onclick="setHistFilter('month',this)">Mois</button>
+      <button class="hist-period-btn" onclick="setHistFilter('6months',this)">6 mois</button>
+      <button class="hist-period-btn" onclick="setHistFilter('year',this)">Année</button>
+    </div>
+    <div class="hist-summary" id="histSummary"></div>
+    <div id="histList"></div>
+
+    <div style="height:32px"></div>
+  </div>
+  <div class="nav"><div class="ni" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Accueil</span></div><div class="ni" onclick="go('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></div><div class="ni-plus" onclick="goPost()"><div class="plus-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>Poster</span></div><div class="ni on" onclick="go('goals')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="white"/></svg><span style="color:white">Objectifs</span></div><div class="ni" onclick="go('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div></div>
+</div>
+
+<!-- SALE DETAIL SHEET -->
+<div class="sale-detail-overlay" id="saleDetailOverlay" onclick="closeSaleDetail()">
+  <div class="sale-detail-sheet" onclick="event.stopPropagation()">
+    <div class="sale-detail-handle"></div>
+    <div class="sale-detail-price" id="saleDetailPrice">0 €</div>
+    <div class="sale-detail-name" id="saleDetailName"></div>
+    <div class="sale-detail-brand" id="saleDetailBrand" style="display:none"></div>
+    <div class="sale-detail-date" id="saleDetailDate"></div>
+  </div>
+</div>
+
+<!-- GOAL EDIT SHEET -->
+<div class="goal-edit-overlay" id="goalEditOverlay">
+  <div class="goal-edit-sheet">
+    <div class="goal-edit-handle"></div>
+    <div class="goal-edit-title">Mes objectifs</div>
+    <div class="goal-edit-sub">Définis tes cibles mensuelles</div>
+    <div class="goal-edit-section">
+      <div class="goal-edit-section-lbl">💰 CA mensuel cible</div>
+      <div class="goal-input-wrap">
+        <div class="goal-input-unit">€</div>
+        <input class="goal-input" id="goalInput" type="number" placeholder="500" inputmode="numeric">
+      </div>
+      <div class="goal-presets">
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=200">200</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=500">500</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=1000">1 000</div>
+        <div class="goal-preset" onclick="document.getElementById('goalInput').value=2000">2 000</div>
+      </div>
+    </div>
+    <div class="goal-edit-section">
+      <div class="goal-edit-section-lbl">🛍️ Nombre de ventes cible</div>
+      <div class="goal-input-wrap">
+        <div class="goal-input-unit">#</div>
+        <input class="goal-input" id="salesGoalInput" type="number" placeholder="10" inputmode="numeric">
+      </div>
+      <div class="goal-presets">
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=5">5</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=10">10</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=20">20</div>
+        <div class="goal-preset" onclick="document.getElementById('salesGoalInput').value=30">30</div>
+      </div>
+    </div>
+    <button class="goal-save-btn" onclick="saveGoalFromInput()">Enregistrer mes objectifs</button>
+  </div>
+</div>
+
+<div class="sales-overlay" id="salesOverlay">
+  <div class="sales-sheet">
+    <div class="sales-sheet-head">
+      <div class="sales-sheet-handle"></div>
+      <div class="sales-sheet-title" id="salesTitle"></div>
+      <div class="sales-sheet-sub" id="salesSub"></div>
+    </div>
+    <div class="sales-list" id="salesList"></div>
+  </div>
+</div>
+
+<div class="del-overlay" id="delOverlay">
+  <div class="del-sheet">
+    <div class="del-sheet-handle"></div>
+    <div class="del-sheet-name" id="delItemName"></div>
+    <button class="del-btn-cancel" id="archiveToggleBtn" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:var(--amber);margin-bottom:8px" onclick="confirmArchive()"></button>
+    <button class="del-btn-danger" onclick="confirmDelete()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      Supprimer
+    </button>
+    <button class="del-btn-cancel" style="background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.25);color:var(--green);margin-bottom:8px" onclick="confirmSold()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="20 6 9 17 4 12"/></svg>Marquer comme vendu
+    </button>
+    <button class="del-btn-cancel" onclick="document.getElementById('delOverlay').style.display='none'" style="margin-top:4px">Annuler</button>
+  </div>
+</div>
 
 <div class="pub-sheet-overlay" id="pubSheetOverlay">
   <div class="pub-sheet">
@@ -671,20 +993,164 @@ const QR = {
   initial:["Bonjour ! Oui encore dispo 😊","Vous pouvez faire une offre","Envoi rapide possible !","Disponible en main propre"]
 };
 
+// ─── SUPABASE ────────────────────────────────────────
+const SB_URL = 'https://jzkvqvbyeteievdrcbjq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6a3ZxdmJ5ZXRlaWV2ZHJjYmpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MjIxOTcsImV4cCI6MjA5NjI5ODE5N30.-nFsCUkYh5XjOVSf07jxbo3J0T03w-BG6_Stu3ldivA';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+let currentUser = null;
+let currentAuthTab = 'login';
+
+function switchAuthTab(tab) {
+  currentAuthTab = tab;
+  document.getElementById('authTabLogin').classList.toggle('on', tab==='login');
+  document.getElementById('authTabRegister').classList.toggle('on', tab==='register');
+  document.getElementById('authBtn').textContent = tab==='login' ? 'Se connecter' : "S'inscrire";
+  document.getElementById('authSwitchTxt').textContent = tab==='login' ? 'Pas encore de compte ?' : 'Déjà un compte ?';
+  document.getElementById('authSwitchLink').textContent = tab==='login' ? "S'inscrire" : 'Se connecter';
+  document.getElementById('authSwitchLink').onclick = () => switchAuthTab(tab==='login'?'register':'login');
+  document.getElementById('authError').textContent = '';
+}
+
+async function authAction() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  const btn = document.getElementById('authBtn');
+  if (!email || !password) { errEl.textContent = 'Remplis tous les champs'; return; }
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    let res;
+    if (currentAuthTab === 'login') {
+      res = await sb.auth.signInWithPassword({ email, password });
+    } else {
+      res = await sb.auth.signUp({ email, password });
+    }
+    if (res.error) { errEl.textContent = res.error.message; btn.disabled=false; btn.textContent=currentAuthTab==='login'?'Se connecter':"S'inscrire"; return; }
+    if (res.data?.user) {
+      onUserLoggedIn(res.data.user);
+    } else {
+      errEl.textContent = 'Vérifie ta boîte mail pour confirmer ton compte.';
+      btn.disabled=false; btn.textContent=currentAuthTab==='login'?'Se connecter':"S'inscrire";
+    }
+  } catch(e) { errEl.textContent = e.message; btn.disabled=false; btn.textContent=currentAuthTab==='login'?'Se connecter':"S'inscrire"; }
+}
+
+function onUserLoggedIn(user) {
+  currentUser = user;
+  document.getElementById('authScreen').style.display = 'none';
+  const initials = user.email.substring(0,2).toUpperCase();
+  document.getElementById('profileAvatar').textContent = initials;
+  document.getElementById('profileName').textContent = user.email.split('@')[0];
+  document.getElementById('profileSub').textContent = user.email;
+  loadSavedData();
+  buildCards();
+  renderConvList();
+  go('home');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  userListings = []; sales = []; monthlyGoal = 0; salesGoal = 0;
+  localStorage.clear();
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authError').textContent = '';
+  switchAuthTab('login');
+  document.getElementById('authScreen').style.display = 'flex';
+}
+
+async function checkAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    onUserLoggedIn(session.user);
+  } else {
+    document.getElementById('authScreen').style.display = 'flex';
+  }
+}
+
+async function syncToSupabase() {
+  if (!currentUser) return;
+  try {
+    if (userListings.length > 0) {
+      await sb.from('listings').upsert(userListings.map(l => ({
+        id: l.id, user_id: currentUser.id, name: l.name, brand: l.brand||null, price: l.price,
+        status: l.status||'active', platform: l.platform||null,
+        description: l.description||null, images: l.images||[]
+      })));
+    }
+    const realSales = sales.filter(s => s.id > 10000);
+    if (realSales.length > 0) {
+      await sb.from('sales').upsert(realSales.map(s => ({
+        id: s.id, user_id: currentUser.id, listing_id: s.listingId||null, name: s.name,
+        brand: s.brand||null, price: s.price, date: s.date
+      })));
+    }
+    await sb.from('goals').upsert({user_id: currentUser.id, monthly_goal:monthlyGoal, sales_goal:salesGoal});
+  } catch(e) { console.warn('[Supabase] sync:', e.message); }
+}
+
+async function loadFromSupabase() {
+  try {
+    const [ldRes, slRes, gRes] = await Promise.all([
+      sb.from('listings').select('*').order('created_at',{ascending:false}),
+      sb.from('sales').select('*').order('date',{ascending:false}),
+      sb.from('goals').select('*').eq('user_id', currentUser?.id||'').maybeSingle()
+    ]);
+    let changed = false;
+    if (!ldRes.error && ldRes.data) {
+      userListings = ldRes.data.map(l => ({
+        id:l.id, name:l.name, brand:l.brand, price:l.price,
+        status:l.status, platform:l.platform, description:l.description, images:l.images||[]
+      }));
+      localStorage.setItem('lq_listings', JSON.stringify(userListings));
+      changed = true;
+    }
+    if (!slRes.error && slRes.data && slRes.data.length > 0) {
+      sales = slRes.data.map(s => ({
+        id:s.id, listingId:s.listing_id, name:s.name,
+        brand:s.brand, price:s.price, date:s.date
+      }));
+      localStorage.setItem('lq_sales', JSON.stringify(sales));
+      changed = true;
+    }
+    if (!gRes.error && gRes.data) {
+      monthlyGoal = gRes.data.monthly_goal||0;
+      salesGoal = gRes.data.sales_goal||0;
+      localStorage.setItem('lq_goal', monthlyGoal);
+      localStorage.setItem('lq_sales_goal', salesGoal);
+      changed = true;
+    }
+    if (changed) { buildCards(); updateStats(); }
+  } catch(e) { console.warn('[Supabase] load:', e.message); }
+}
+
 // ─── STATE ──────────────────────────────────────────
 let images = [], articleCount = 0, currentConvId = null, currentFilter = 'all', detailOrigin = 'home';
 let userListings = [];
+let listingOverrides = {};
+let sales = [];
+let monthlyGoal = 0;
+let salesGoal = 0;
 
 // ─── LOCALSTORAGE ────────────────────────────────────
-function allListings() { return [...userListings, ...LISTINGS]; }
+function allListings() {
+  const demoes = LISTINGS
+    .filter(l => listingOverrides[l.id] !== 'deleted')
+    .map(l => listingOverrides[l.id] ? {...l, status: listingOverrides[l.id]} : l);
+  return [...userListings, ...demoes];
+}
 
 function saveUserData() {
   try {
     localStorage.setItem('lq_listings', JSON.stringify(userListings));
+    localStorage.setItem('lq_overrides', JSON.stringify(listingOverrides));
+    localStorage.setItem('lq_sales', JSON.stringify(sales));
     const convData = CONVERSATIONS.map(c => ({id:c.id, messages:c.messages, unread:c.unread}));
     localStorage.setItem('lq_convs', JSON.stringify(convData));
     localStorage.setItem('lq_count', articleCount);
   } catch(e) { showToast('Erreur de sauvegarde'); }
+  syncToSupabase();
 }
 
 function loadSavedData() {
@@ -697,9 +1163,160 @@ function loadSavedData() {
       if (c) { c.messages = saved.messages; c.unread = saved.unread; }
     });
     const lcount = localStorage.getItem('lq_count');
-    if (lcount) { articleCount = parseInt(lcount); document.getElementById('homeToday').textContent = articleCount; }
+    if (lcount) articleCount = parseInt(lcount);
+    const lo = localStorage.getItem('lq_overrides');
+    if (lo) listingOverrides = JSON.parse(lo);
+    const lg = localStorage.getItem('lq_goal');
+    if (lg) monthlyGoal = parseInt(lg);
+    const lsg = localStorage.getItem('lq_sales_goal');
+    if (lsg) salesGoal = parseInt(lsg);
+    const lsales = localStorage.getItem('lq_sales');
+    if (lsales) sales = JSON.parse(lsales);
+    else {
+      const now = new Date();
+      const d = (offset) => { const t = new Date(now); t.setDate(t.getDate()-offset); return t.toISOString(); };
+      sales = [
+        {id:1, listingId:0, name:'Veste en cuir oversize', brand:'Zara', price:45, date: d(0).replace(/T\d{2}/, 'T09')},
+        {id:2, listingId:0, name:'Sneakers Air Max 90', brand:'Nike', price:78, date: d(0).replace(/T\d{2}/, 'T14')},
+        {id:3, listingId:0, name:'Sac bandoulière', brand:'Mango', price:32, date: d(2)},
+        {id:4, listingId:0, name:'Jean slim taille haute', brand:'Levi\'s', price:29, date: d(5)},
+        {id:5, listingId:0, name:'Lunettes de soleil', brand:'Prada', price:120, date: d(8)},
+        {id:6, listingId:0, name:'Robe midi fleurie', brand:'Sézane', price:55, date: d(12)},
+        {id:7, listingId:0, name:'Pull en laine mérinos', brand:'COS', price:38, date: d(18)},
+        {id:8, listingId:0, name:'Blazer croisé', brand:'H&M', price:22, date: d(22)},
+      ];
+    }
   } catch(e) {}
   updateApiKeyStatus();
+  updateStats();
+  loadFromSupabase();
+}
+
+// ─── GESTION ANNONCES ────────────────────────────────
+let delTargetId = null;
+let homeTab = 'actives';
+
+function switchHomeTab(tab, el) {
+  homeTab = tab;
+  document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  buildCards();
+}
+
+function showDetailMenu() {
+  const listing = allListings().find(l => l.id === delTargetId) || currentDetailItem;
+  if (!listing) return;
+  delTargetId = listing.id;
+  document.getElementById('delItemName').textContent = listing.name;
+  const isArchived = listing.status === 'archived';
+  const btn = document.getElementById('archiveToggleBtn');
+  if (isArchived) {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>Remettre en ligne';
+    btn.style.background = 'rgba(74,222,128,.08)';
+    btn.style.borderColor = 'rgba(74,222,128,.25)';
+    btn.style.color = 'var(--green)';
+    btn.onclick = confirmUnarchive;
+  } else {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archiver';
+    btn.style.background = 'rgba(251,191,36,.08)';
+    btn.style.borderColor = 'rgba(251,191,36,.25)';
+    btn.style.color = 'var(--amber)';
+    btn.onclick = confirmArchive;
+  }
+  document.getElementById('delOverlay').style.display = 'flex';
+}
+
+function confirmArchive() {
+  const ul = userListings.find(l => l.id === delTargetId);
+  if (ul) ul.status = 'archived';
+  else listingOverrides[delTargetId] = 'archived';
+  saveUserData(); buildCards(); detailGoBack();
+  document.getElementById('delOverlay').style.display = 'none';
+  showToast('Annonce archivée');
+}
+
+function confirmUnarchive() {
+  const ul = userListings.find(l => l.id === delTargetId);
+  if (ul) ul.status = 'pub';
+  else delete listingOverrides[delTargetId];
+  saveUserData(); buildCards(); detailGoBack();
+  document.getElementById('delOverlay').style.display = 'none';
+  showToast('Annonce remise en ligne ✓');
+}
+
+function confirmDelete() {
+  const isDemo = LISTINGS.some(l => l.id === delTargetId);
+  if (isDemo) listingOverrides[delTargetId] = 'deleted';
+  else userListings = userListings.filter(l => l.id !== delTargetId);
+  saveUserData(); buildCards();
+  document.getElementById('delOverlay').style.display = 'none';
+  detailGoBack();
+  showToast('Annonce supprimée');
+}
+
+function confirmSold() {
+  const listing = allListings().find(l => l.id === delTargetId);
+  if (!listing) return;
+  const ul = userListings.find(l => l.id === delTargetId);
+  if (ul) ul.status = 'archived';
+  else listingOverrides[delTargetId] = 'archived';
+  sales.unshift({id: Date.now(), listingId: delTargetId, name: listing.name, brand: listing.brand, price: listing.price, date: new Date().toISOString()});
+  saveUserData(); buildCards();
+  document.getElementById('delOverlay').style.display = 'none';
+  detailGoBack();
+  showToast('Vendu ! 🎉 +' + listing.price + ' €');
+}
+
+function updateStats() {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0,10);
+  const monthStr = now.toISOString().slice(0,7);
+  const todayCount = sales.filter(s => s.date.startsWith(todayStr)).length;
+  const monthCount = sales.filter(s => s.date.startsWith(monthStr)).length;
+  const totalCA = sales.reduce((a, s) => a + (s.price||0), 0);
+  document.getElementById('homeToday').textContent = todayCount;
+  document.getElementById('homeMonth').textContent = monthCount;
+  document.getElementById('homeCA').textContent = totalCA + ' €';
+}
+
+function openSalesSheet(filter) {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0,10);
+  const monthStr = now.toISOString().slice(0,7);
+  let filtered, title, subtitle;
+  if (filter === 'today') {
+    filtered = sales.filter(s => s.date.startsWith(todayStr));
+    title = "Ventes aujourd'hui";
+    subtitle = filtered.length + ' vente' + (filtered.length !== 1 ? 's' : '') + ' · ' + filtered.reduce((a,s)=>a+s.price,0) + ' €';
+  } else if (filter === 'month') {
+    filtered = sales.filter(s => s.date.startsWith(monthStr));
+    title = 'Ventes ce mois';
+    subtitle = filtered.length + ' vente' + (filtered.length !== 1 ? 's' : '') + ' · ' + filtered.reduce((a,s)=>a+s.price,0) + ' €';
+  } else {
+    filtered = [...sales];
+    title = 'Toutes les ventes';
+    const total = filtered.reduce((a,s)=>a+s.price,0);
+    subtitle = filtered.length + ' vente' + (filtered.length !== 1 ? 's' : '') + ' · CA : ' + total + ' €';
+  }
+  document.getElementById('salesTitle').textContent = title;
+  document.getElementById('salesSub').textContent = subtitle;
+  const list = document.getElementById('salesList');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="sales-empty">Aucune vente pour cette période</div>';
+  } else {
+    list.innerHTML = filtered.map(s => {
+      const d = new Date(s.date);
+      const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short', year:'numeric'});
+      const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+      return `<div class="sale-row">
+        <div><div class="sale-name">${s.brand ? s.brand + ' — ' : ''}${s.name}</div><div class="sale-date">${dateStr} à ${timeStr}</div></div>
+        <div class="sale-price">+${s.price} €</div>
+      </div>`;
+    }).join('');
+  }
+  const overlay = document.getElementById('salesOverlay');
+  overlay.style.display = 'flex';
+  overlay.onclick = e => { if (e.target === overlay) overlay.style.display = 'none'; };
 }
 
 // ─── PUBLICATION PLATEFORME ──────────────────────────
@@ -783,6 +1400,7 @@ function getApiHeaders() {
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id === 'goals') updateGoalsPage();
 }
 
 function goPost() {
@@ -795,10 +1413,25 @@ function detailGoBack() { go(detailOrigin); }
 // ─── HOME CARDS ─────────────────────────────────────
 function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
 
+function updateTabCounts() {
+  const all = allListings();
+  const nActives = all.filter(l => l.status !== 'archived').length;
+  const nArchives = all.filter(l => l.status === 'archived').length;
+  document.getElementById('countActives').textContent = nActives > 0 ? nActives : '';
+  document.getElementById('countArchives').textContent = nArchives > 0 ? nArchives : '';
+}
+
 function buildCards() {
+  updateTabCounts();
+  updateStats();
   const grid = document.getElementById('cardsGrid');
   grid.innerHTML = '';
-  allListings().forEach(item => {
+  const filtered = allListings().filter(item => homeTab === 'archives' ? item.status === 'archived' : item.status !== 'archived');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 16px;color:var(--t2);font-size:13px">${homeTab==='archives'?'Aucune annonce archivée':'Aucune annonce active'}</div>`;
+    return;
+  }
+  filtered.forEach(item => {
     const tv = item.platforms.reduce((a,p)=>a+p.views,0);
     const tf = item.platforms.reduce((a,p)=>a+p.favs,0);
     const tm = item.platforms.reduce((a,p)=>a+p.msgs,0);
@@ -817,7 +1450,7 @@ function buildCards() {
       <div class="lcard-body">
         <div class="lcard-brand">${item.brand}</div>
         <div class="lcard-name">${item.name}</div>
-        <div><span class="lcard-price">${item.price} €</span><span class="lcard-size">${item.size}</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span class="lcard-price">${item.price} €</span>${item.size?`<span class="lcard-size">${item.size}</span>`:''}</div>
         <div class="lcard-stats">
           <div class="lcard-stat"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span style="color:#60a5fa;font-weight:600">${fmt(tv)}</span></div>
           <div class="lcard-stat"><svg viewBox="0 0 24 24" fill="none" stroke="#fe2c55" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span style="color:#fe2c55;font-weight:600">${fmt(tf)}</span></div>
@@ -826,11 +1459,16 @@ function buildCards() {
       </div>`;
     card.addEventListener('click', () => { detailOrigin='home'; openDetail(item); });
     grid.appendChild(card);
+    const nameEl = card.querySelector('.lcard-name');
+    if (nameEl) { let fs=13; while(nameEl.scrollWidth>nameEl.clientWidth&&fs>8){fs-=.5;nameEl.style.fontSize=fs+'px';} }
   });
 }
 
 // ─── DETAIL ─────────────────────────────────────────
+let currentDetailItem = null;
 function openDetail(item) {
+  currentDetailItem = item;
+  delTargetId = item.id;
   const hero = document.getElementById('detailHero');
   hero.style.backgroundImage = item.img ? `url(${item.img})` : '';
   hero.style.backgroundSize = 'cover';
@@ -931,7 +1569,7 @@ function resetPost() {
 // ─── AI ANALYSIS ────────────────────────────────────
 async function startAI() {
   if (!images.length) { showToast('Importe au moins une photo'); return; }
-  if (!localStorage.getItem('lq_apikey')) { showApiModal(); return; }
+  if (!localStorage.getItem('lq_apikey')) { showToast('Mode démo — configure ta clé API dans Profil pour une vraie analyse'); }
   document.getElementById('aiBtn').disabled = true;
   document.getElementById('aiTxt').textContent = 'Analyse en cours...';
   document.getElementById('aiShimmer').style.display = 'block';
@@ -959,11 +1597,32 @@ async function animSteps() {
   setDone('ls3','li3'); setOn('ls4','li4');
 }
 
+const DEMO_RESULT = {brand:"⚠️ DÉMO",category:"Lunettes",model:"",size:"",color:"Noir",material:"Acétate",condition:"Très bon état",style:"Luxe",tags:["lunettes","soleil","demo","mode","luxe"],title:"[DÉMO] Active ta clé API pour une vraie analyse",description:"Ceci est un résultat de démonstration. Configure ta clé API Anthropic dans Profil pour que l'IA analyse vraiment tes photos et reconnaisse la marque, le modèle et estime le prix réel.",price_new:0,price_min:0,price_recommended:0,price_max:0,similar_count:0};
+
 async function callAPI() {
+  if (!localStorage.getItem('lq_apikey')) {
+    showResult(DEMO_RESULT);
+    return;
+  }
   const contents = images.map(img => ({type:"image",source:{type:"base64",media_type:img.file.type||"image/jpeg",data:img.url.split(',')[1]}}));
-  const prompt = `Expert revente mode. Analyse ces images. Retourne UNIQUEMENT un JSON valide sans markdown:
-{"brand":"marque","category":"Vêtement/Chaussures/Accessoire/Sac","size":"taille","color":"couleur","material":"matière","condition":"Neuf avec étiquettes/Excellent état/Très bon état/Bon état/État correct","style":"style","tags":["t1","t2","t3","t4","t5"],"title":"titre max 55 car","description":"3-4 phrases percutantes","price_min":0,"price_recommended":0,"price_max":0,"similar_count":0}
-Prix en euros marché français Vinted/Leboncoin.`;
+  const prompt = `Tu es un expert en revente de mode et luxe (Vinted, Leboncoin, Vestiaire Collective, StockX). Analyse ces photos avec précision.
+
+IDENTIFICATION :
+- Lis tous les logos, inscriptions, étiquettes visibles sur l'article
+- Identifie la marque EXACTE (ex: Prada, Louis Vuitton, Nike, Zara...)
+- Trouve le modèle PRÉCIS si visible (ex: "Symbole", "Neverfull MM", "Air Max 90"...)
+- Déduis la taille depuis étiquettes ou proportions
+- Note l'état réel visible (usure, rayures, défauts)
+
+ESTIMATION PRIX :
+- Prix neuf boutique (si marque de luxe/premium)
+- Prix occasion actuel sur Vinted/Leboncoin/Vestiaire pour article similaire en même état
+- Fourchette réaliste min/max selon état
+
+Retourne UNIQUEMENT ce JSON valide, sans markdown, sans texte autour :
+{"brand":"marque exacte","category":"Vêtement/Chaussures/Accessoire/Sac/Lunettes/Bijou/Montre","model":"modèle précis ou vide","size":"taille ou vide","color":"couleur(s)","material":"matière principale","condition":"Neuf avec étiquettes/Excellent état/Très bon état/Bon état/État correct","style":"Luxe/Streetwear/Casual/Sport/Vintage/Classique","tags":["tag1","tag2","tag3","tag4","tag5"],"title":"titre accrocheur max 55 car avec marque+modèle SANS la taille","description":"2-3 phrases percutantes pour l'annonce, mentionne les points forts et l'état","price_new":0,"price_min":0,"price_recommended":0,"price_max":0,"similar_count":0}
+
+Note: price_new = prix neuf indicatif, 0 si inconnue. similar_count = estimation annonces similaires sur le marché.`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method:"POST", headers: getApiHeaders(),
@@ -979,7 +1638,7 @@ Prix en euros marché français Vinted/Leboncoin.`;
     showResult(JSON.parse(raw));
   } catch(e) {
     showToast('Analyse échouée — données demo affichées');
-    showResult({brand:"Nike",category:"Chaussures",size:"42",color:"Triple White",material:"Cuir / mesh",condition:"Excellent état",style:"Streetwear",tags:["nike","airmax","sneakers","blanc","sport"],title:"Nike Air Max 90 Triple White — T.42",description:"Paire de Nike Air Max 90 Triple White taille 42. Portées 3 fois, semelle impeccable, boîte originale fournie.",price_min:55,price_recommended:75,price_max:110,similar_count:248});
+    showResult(DEMO_RESULT);
   }
 }
 
@@ -1000,7 +1659,12 @@ function showResult(d) {
   document.getElementById('pMin').textContent = (d.price_min||0)+' €';
   document.getElementById('pRec').textContent = (d.price_recommended||0)+' €';
   document.getElementById('pMax').textContent = (d.price_max||0)+' €';
-  document.getElementById('priceNote').textContent = 'Basé sur '+(d.similar_count||0)+' articles similaires';
+  document.getElementById('priceNote').textContent = 'Basé sur '+(d.similar_count||0)+' articles similaires sur Vinted/Leboncoin';
+  const pNewRow = document.getElementById('priceNewRow');
+  if (d.price_new && d.price_new > 0) {
+    document.getElementById('pNew').textContent = d.price_new+' €';
+    pNewRow.style.display = 'flex';
+  } else { pNewRow.style.display = 'none'; }
   const tags = document.getElementById('fTags'); tags.innerHTML='';
   (d.tags||[]).forEach(t => { const s=document.createElement('span');s.className='tag';s.textContent='#'+t;tags.appendChild(s); });
   document.getElementById('loadBox').style.display='none';
@@ -1215,6 +1879,264 @@ function voirArticle() {
   openDetail(listing);
 }
 
+// ─── OBJECTIFS ───────────────────────────────────────
+const BADGES_DEF = [
+  {id:'b_first',  icon:'🎯', name:'Premier pas',  desc:'1ère vente réalisée',       check:(s)=>s.length>=1},
+  {id:'b_ten',    icon:'🛒', name:'10 ventes',     desc:'10 articles vendus',        check:(s)=>s.length>=10},
+  {id:'b_streak', icon:'🔥', name:'En feu !',      desc:'3 mois consécutifs',        check:(s,str)=>str>=3},
+  {id:'b_1k',     icon:'💰', name:'1 000 €',       desc:'CA cumulé dépassé',         check:(s)=>s.reduce((a,x)=>a+x.price,0)>=1000},
+  {id:'b_luxury', icon:'💎', name:'Luxe',           desc:'Une vente à +100 €',        check:(s)=>s.some(x=>x.price>=100)},
+  {id:'b_pro',    icon:'🏆', name:'Pro vendeur',   desc:'50 articles vendus',        check:(s)=>s.length>=50},
+];
+
+let histFilter = 'month';
+
+function updateGoalsPage() {
+  const now = new Date();
+  const monthStr = now.toISOString().slice(0,7);
+  const monthSales = sales.filter(s=>s.date.startsWith(monthStr));
+  const ca = monthSales.reduce((a,s)=>a+s.price,0);
+  const nb = monthSales.length;
+  const daysInMonth = new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const day = now.getDate();
+
+  // Mois
+  const monthName = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  document.getElementById('goalMonthHdr').textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1);
+
+  // Grand CA
+  document.getElementById('goalHeroCA').textContent = ca+' €';
+
+  // Barre hero + statut
+  const barWrap = document.getElementById('goalHeroBarWrap');
+  const editBtn = document.getElementById('goalHeroEditBtn');
+  const tag = document.getElementById('goalStatusTag');
+  if (monthlyGoal > 0) {
+    barWrap.style.display = 'block'; editBtn.style.display = 'none';
+    const pct = Math.min(100, Math.round(ca/monthlyGoal*100));
+    const done = ca >= monthlyGoal;
+    document.getElementById('goalHeroBarFill').style.width = pct+'%';
+    document.getElementById('goalHeroBarFill').style.background = done?'var(--green)':'var(--red)';
+    document.getElementById('goalHeroBarLbl').textContent = ca+' / '+monthlyGoal+' € · '+nb+' vente'+(nb!==1?'s':'');
+    if (nb > 0) {
+      const projected = day>0?Math.round(ca/day*daysInMonth):0;
+      let txt,bg,color;
+      if (done)                          {txt='🎉 Objectif atteint !';  bg='rgba(74,222,128,.12)'; color='var(--green)';}
+      else if (projected>=monthlyGoal)   {txt='🚀 Tu es en avance';    bg='rgba(74,222,128,.08)'; color='var(--green)';}
+      else if (projected>=monthlyGoal*.8){txt='👍 Dans les temps';     bg='rgba(251,191,36,.1)';  color='var(--amber)';}
+      else                               {txt='⚠️ Accélère le rythme'; bg='rgba(254,44,85,.1)';   color='var(--red)';}
+      tag.style.cssText=`display:inline-flex;background:${bg};border-color:${color}44;`;
+      document.getElementById('goalStatusTagTxt').textContent=txt;
+      document.getElementById('goalStatusTagTxt').style.color=color;
+    } else { tag.style.display='none'; }
+  } else { barWrap.style.display='none'; tag.style.display='none'; editBtn.style.display='inline-block'; }
+
+  // Barres CA mensuel + Ventes
+  const caSub=document.getElementById('goalCASub'), caBar=document.getElementById('goalCABarFill');
+  const caPct=monthlyGoal>0?Math.min(100,Math.round(ca/monthlyGoal*100)):0;
+  if (!monthlyGoal) { caSub.textContent='Objectif non défini'; caBar.style.width='0%'; }
+  else { caSub.textContent=ca+' / '+monthlyGoal+' €'; caBar.style.width=caPct+'%'; caBar.style.background=ca>=monthlyGoal?'var(--green)':'var(--red)'; }
+
+  const sSub=document.getElementById('goalSalesSub'), sBar=document.getElementById('goalSalesBarFill');
+  const sPct=salesGoal>0?Math.min(100,Math.round(nb/salesGoal*100)):0;
+  if (!salesGoal) { sSub.textContent='Objectif non défini'; sBar.style.width='0%'; }
+  else { sSub.textContent=nb+' / '+salesGoal+' vente'+(salesGoal>1?'s':''); sBar.style.width=sPct+'%'; sBar.style.background=nb>=salesGoal?'var(--green)':'#60a5fa'; }
+
+  // Graphique
+  buildGoalChart(monthStr);
+
+  // Badges
+  const byMonth={};
+  sales.forEach(s=>{const k=s.date.slice(0,7);if(!byMonth[k])byMonth[k]={total:0,count:0};byMonth[k].total+=s.price;byMonth[k].count++;});
+  updateBadges(computeStreak(byMonth));
+
+  // Historique
+  buildHistList();
+}
+
+function setHistFilter(period, el) {
+  histFilter = period;
+  document.querySelectorAll('.hist-period-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  buildHistList();
+}
+
+function buildHistList() {
+  const now = new Date();
+  let since;
+  if (histFilter==='day')      since = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  else if (histFilter==='week') since = new Date(now-7*86400000);
+  else if (histFilter==='month') since = new Date(now.getFullYear(),now.getMonth(),1);
+  else if (histFilter==='6months') since = new Date(now.getFullYear(),now.getMonth()-5,1);
+  else                          since = new Date(now.getFullYear()-1,now.getMonth(),now.getDate());
+
+  const filtered = sales.filter(s=>new Date(s.date)>=since).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const total = filtered.reduce((a,s)=>a+s.price,0);
+
+  document.getElementById('histSummary').innerHTML = filtered.length
+    ? `<strong>${filtered.length} vente${filtered.length>1?'s':''}</strong> · <strong>${total} €</strong> encaissés`
+    : '<span>Aucune vente sur cette période</span>';
+
+  document.getElementById('histList').innerHTML = filtered.length
+    ? `<div style="margin:0 16px;background:var(--s1);border:1px solid var(--b);border-radius:16px;overflow:hidden">`+
+      filtered.map(s=>{
+        const d = new Date(s.date);
+        const dateStr = d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+        const timeStr = d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        return `<div class="hist-row" onclick="openSaleDetail(${s.id})">
+          <div class="hist-row-left">
+            <div class="hist-row-name">${s.name}</div>
+            <div class="hist-row-date">${dateStr} à ${timeStr}${s.brand?' · '+s.brand:''}</div>
+          </div>
+          <div class="hist-row-price">+${s.price} €</div>
+        </div>`;
+      }).join('')+`</div><div style="height:8px"></div>`
+    : '<div style="text-align:center;padding:32px 0;font-size:13px;color:var(--t2)">Aucune vente sur cette période</div>';
+}
+
+function openSaleDetail(saleId) {
+  const sale = sales.find(s=>s.id===saleId);
+  if (!sale) return;
+  const d = new Date(sale.date);
+  const dateStr = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const timeStr = d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('saleDetailPrice').textContent = '+'+sale.price+' €';
+  document.getElementById('saleDetailName').textContent = sale.name;
+  const brandEl = document.getElementById('saleDetailBrand');
+  if (sale.brand) { brandEl.textContent=sale.brand; brandEl.style.display='block'; } else { brandEl.style.display='none'; }
+  document.getElementById('saleDetailDate').textContent = 'Vendu le '+dateStr+' à '+timeStr;
+  document.getElementById('saleDetailOverlay').style.display='flex';
+}
+
+function closeSaleDetail() {
+  document.getElementById('saleDetailOverlay').style.display='none';
+}
+
+
+function updateBadges(streak) {
+  const unlocked=BADGES_DEF.map(b=>b.id==='b_streak'?b.check(sales,streak):b.check(sales));
+  const count=unlocked.filter(Boolean).length;
+  document.getElementById('goalBadgeCount').textContent=count+'/'+BADGES_DEF.length;
+  document.getElementById('goalBadges').innerHTML=BADGES_DEF.map((b,i)=>`
+    <div class="goal-badge ${unlocked[i]?'unlocked':''}">
+      <div class="goal-badge-icon">${b.icon}</div>
+      <div class="goal-badge-name">${b.name}</div>
+      <div class="goal-badge-desc">${b.desc}</div>
+    </div>`).join('');
+}
+
+function buildGoalChart(currentMonthStr) {
+  const now=new Date(); const months=[];
+  for (let i=5;i>=0;i--) {
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=d.toISOString().slice(0,7);
+    const label=d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','');
+    const ca=sales.filter(s=>s.date.startsWith(key)).reduce((a,s)=>a+s.price,0);
+    months.push({key,label,ca,isCurrent:key===currentMonthStr});
+  }
+  const maxCA=Math.max(...months.map(m=>m.ca),1);
+  document.getElementById('goalChartTotal').textContent=months.reduce((a,m)=>a+m.ca,0)>0?months.reduce((a,m)=>a+m.ca,0)+' € sur 6 mois':'';
+  document.getElementById('goalChartBars').innerHTML=months.map(m=>{
+    const h=Math.max(Math.round(m.ca/maxCA*100),5);
+    const hit=monthlyGoal>0&&m.ca>=monthlyGoal;
+    const bg=m.isCurrent?'var(--red)':(hit?'rgba(74,222,128,.4)':'var(--s3)');
+    const glow=m.isCurrent?'filter:drop-shadow(0 0 6px rgba(254,44,85,.5));':'';
+    return `<div class="goal-chart-col">
+      <div style="font-size:9px;font-weight:600;color:${m.isCurrent?'var(--red)':(m.ca>0?'var(--t3)':'transparent')};margin-bottom:3px">${m.ca>0?m.ca+'€':''}</div>
+      <div class="goal-chart-bar" style="height:${h}%;background:${bg};${glow}width:100%"></div>
+      <div class="goal-chart-lbl" style="${m.isCurrent?'color:var(--red);font-weight:700':''}">${m.label}</div>
+    </div>`;
+  }).join('');
+}
+
+
+function computeStreak(byMonth) {
+  if (!monthlyGoal||!sales.length) return 0;
+  const now=new Date(); let streak=0;
+  for (let i=1;i<=24;i++) {
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const k=d.toISOString().slice(0,7);
+    if((byMonth[k]?.total||0)>=monthlyGoal) streak++;
+    else break;
+  }
+  return streak;
+}
+
+async function analyzeWithAI() {
+  const btn=document.getElementById('goalAIBtn'),shimmer=document.getElementById('goalAIShimmer'),btnTxt=document.getElementById('goalAIBtnTxt');
+  if (!localStorage.getItem('lq_apikey')) { showToast('Configure ta clé API dans Profil pour utiliser l\'IA'); return; }
+  btn.disabled=true; shimmer.style.display='block'; btnTxt.textContent='Analyse en cours...';
+  const now=new Date();
+  const monthStr=now.toISOString().slice(0,7);
+  const monthSales=sales.filter(s=>s.date.startsWith(monthStr));
+  const ca=monthSales.reduce((a,s)=>a+s.price,0);
+  const nb=monthSales.length;
+  const avg=nb>0?Math.round(ca/nb):0;
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const history=[];
+  for (let i=5;i>=1;i--) {
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const k=d.toISOString().slice(0,7);
+    const mca=sales.filter(s=>s.date.startsWith(k)).reduce((a,s)=>a+s.price,0);
+    history.push(d.toLocaleDateString('fr-FR',{month:'short'})+' '+mca+'€');
+  }
+  const brands=[...new Set(monthSales.map(s=>s.brand).filter(Boolean))].slice(0,3).join(', ')||'variées';
+  const prompt=`Tu es coach expert en revente sur Vinted/Leboncoin/Depop. Analyse les performances de ce vendeur.
+
+Données de ${now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}:
+- CA réalisé: ${ca}€ / objectif: ${monthlyGoal||'non défini'}€
+- Ventes: ${nb} / objectif: ${salesGoal||'non défini'}
+- Prix moyen: ${avg}€ | Jour: ${now.getDate()}/${daysInMonth}
+- Marques vendues: ${brands}
+- Historique 5 mois: ${history.join(', ')||'aucun'}
+- Annonces actives: ${allListings().filter(l=>l.status!=='archived').length}
+
+Retourne UNIQUEMENT ce JSON valide (sans markdown):
+{"statut":"en avance|dans les clous|en retard|objectif atteint","pronostic":"1 phrase percutante max 18 mots","conseils":["conseil ultra-concret 1","conseil ultra-concret 2","conseil ultra-concret 3"],"score":7}`;
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:getApiHeaders(),body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:350,messages:[{role:"user",content:prompt}]})});
+    if (!res.ok) throw new Error('API '+res.status);
+    const data=await res.json();
+    const parsed=JSON.parse(data.content[0].text.trim().replace(/```json|```/g,'').trim());
+    showAIResult(parsed);
+  } catch(e) { showToast('Analyse échouée — vérifie ta connexion'); }
+  finally { btn.disabled=false; shimmer.style.display='none'; btnTxt.textContent='🤖 Réanalyser avec l\'IA'; }
+}
+
+function showAIResult(d) {
+  const emojis={'en avance':'🚀','dans les clous':'👍','en retard':'⚠️','objectif atteint':'🎉'};
+  document.getElementById('goalAIStatut').textContent=(emojis[d.statut]||'📊')+' '+d.statut;
+  document.getElementById('goalAIScore').textContent=(d.score||'?')+'/10';
+  document.getElementById('goalAIPronostic').textContent='"'+(d.pronostic||'')+'"';
+  document.getElementById('goalAIConseils').innerHTML=(d.conseils||[]).map((c,i)=>`
+    <div class="goal-ai-conseil-row">
+      <div class="goal-ai-conseil-num">${i+1}</div>
+      <div class="goal-ai-conseil-txt">${c}</div>
+    </div>`).join('');
+  const card=document.getElementById('goalAICard');
+  card.style.display='block';
+  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function openGoalEdit() {
+  if (monthlyGoal>0) document.getElementById('goalInput').value=monthlyGoal;
+  if (salesGoal>0) document.getElementById('salesGoalInput').value=salesGoal;
+  document.getElementById('goalEditOverlay').style.display='flex';
+}
+
+function saveGoalFromInput() {
+  const ca=parseInt(document.getElementById('goalInput').value)||0;
+  const sv=parseInt(document.getElementById('salesGoalInput').value)||0;
+  if (!ca&&!sv) { showToast('Entre au moins un objectif'); return; }
+  monthlyGoal=ca; salesGoal=sv;
+  localStorage.setItem('lq_goal',monthlyGoal);
+  localStorage.setItem('lq_sales_goal',salesGoal);
+  if (currentUser) sb.from('goals').upsert({user_id: currentUser.id, monthly_goal:monthlyGoal, sales_goal:salesGoal}).then();
+  document.getElementById('goalEditOverlay').style.display='none';
+  updateGoalsPage();
+  showToast('Objectifs enregistrés 🎯');
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
@@ -1223,9 +2145,7 @@ function showToast(msg) {
 }
 
 // ─── INIT ────────────────────────────────────────────
-loadSavedData();
-buildCards();
-renderConvList();
+checkAuth();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
